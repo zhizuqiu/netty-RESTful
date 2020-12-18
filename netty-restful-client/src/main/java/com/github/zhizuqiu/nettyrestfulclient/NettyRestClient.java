@@ -35,6 +35,13 @@ public class NettyRestClient {
         private String host = "localhost";
         private int port = 8080;
         private long timeout = -1;
+        private int maxFrameSize = 1024 * 100;
+
+        public Builder maxFrameSize(int maxFrameSize) {
+            this.maxFrameSize = maxFrameSize;
+            return this;
+        }
+
 
         public Builder group(EventLoopGroup group) {
             this.group = group;
@@ -57,6 +64,11 @@ public class NettyRestClient {
         }
 
         public <T> T target(Class<T> apiType) {
+
+            String frameSize = System.getProperty("com.github.zhizuqiu.nettyrestfulclient.maxFrameSize");
+            if (frameSize != null) {
+                maxFrameSize = Integer.parseInt(frameSize);
+            }
             if (group == null) {
                 group = new NioEventLoopGroup(2);
             }
@@ -70,7 +82,7 @@ public class NettyRestClient {
                     ChannelPipeline p = ch.pipeline();
                     p.addLast("codec", new HttpClientCodec());
                     p.addLast("chunkedWriter", new ChunkedWriteHandler());
-                    p.addLast("aggregate", new HttpObjectAggregator(1024 * 100));
+                    p.addLast("aggregate", new HttpObjectAggregator(maxFrameSize));
                 }
             });
 
