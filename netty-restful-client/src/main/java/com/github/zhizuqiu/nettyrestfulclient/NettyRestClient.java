@@ -36,6 +36,12 @@ public class NettyRestClient {
         private int port = 8080;
         private long timeout = -1;
         private int maxFrameSize = 1024 * 100;
+        private String preProxy = "";
+
+        public Builder preProxy(String preProxy) {
+            this.preProxy = preProxy;
+            return this;
+        }
 
         public Builder maxFrameSize(int maxFrameSize) {
             this.maxFrameSize = maxFrameSize;
@@ -98,7 +104,7 @@ public class NettyRestClient {
                                 host,
                                 port,
                                 timeout,
-                                new Request(method),
+                                new Request(method, this.preProxy),
                                 new ResponsePromise(method.getAnnotatedReturnType().getType())
                         ));
                     }

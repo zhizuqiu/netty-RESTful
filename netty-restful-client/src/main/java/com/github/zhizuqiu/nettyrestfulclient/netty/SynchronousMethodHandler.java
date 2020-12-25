@@ -30,13 +30,13 @@ import java.util.concurrent.TimeUnit;
 
 public class SynchronousMethodHandler implements MethodHandler {
 
-    private Bootstrap bootstrap;
-    private String host;
-    private int port;
-    private long timeout;
+    private final Bootstrap bootstrap;
+    private final String host;
+    private final int port;
+    private final long timeout;
 
-    private Request visionRequest;
-    private ResponsePromise responsePromise;
+    private final Request visionRequest;
+    private final ResponsePromise responsePromise;
 
 
     public SynchronousMethodHandler(Bootstrap bootstrap, String host, int port, long timeout, Request visionRequest, ResponsePromise responsePromise) {

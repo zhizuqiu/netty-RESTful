@@ -6,10 +6,12 @@ import io.netty.handler.codec.http.HttpMethod;
 import java.lang.reflect.Method;
 
 public class Request {
-    private Method method;
+    private final Method method;
+    private final String preProxy;
 
-    public Request(Method method) {
+    public Request(Method method, String preProxy) {
         this.method = method;
+        this.preProxy = preProxy;
     }
 
     public HttpMethod getHttpMethod() {
@@ -28,7 +30,7 @@ public class Request {
 
     public String getUrl() {
         HttpMap httpMap = method.getAnnotation(HttpMap.class);
-        return httpMap.path();
+        return this.preProxy + httpMap.path();
     }
 
     public HttpMap.ParamType getParamType() {
