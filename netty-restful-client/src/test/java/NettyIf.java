@@ -1,5 +1,3 @@
-package com.github.zhizuqiu.example;
-
 import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
 
 import java.util.Map;

@@ -29,8 +29,8 @@
             <artifactId>netty-restful-gson</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>com.github.zhizuqiu</groupId>
+            <artifactId>netty-restful-fastjson</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

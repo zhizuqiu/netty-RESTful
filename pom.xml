@@ -14,6 +14,7 @@
         <module>netty-restful-server</module>
         <module>netty-restful-client</module>
         <module>netty-restful-gson</module>
+        <module>netty-restful-fastjson</module>
     </modules>
 
     <properties>
@@ -25,6 +26,7 @@
         <gson.version>2.8.2</gson.version>
         <netty-restful-common.version>2.0-SNAPSHOT</netty-restful-common.version>
         <netty-restful-gson.version>2.0-SNAPSHOT</netty-restful-gson.version>
+        <netty-restful-fastjson.version>2.0-SNAPSHOT</netty-restful-fastjson.version>
         <mustache.version>0.9.5</mustache.version>
         <junit.version>4.13.1</junit.version>
     </properties>
@@ -50,6 +52,11 @@
                 <groupId>com.github.zhizuqiu</groupId>
                 <artifactId>netty-restful-gson</artifactId>
                 <version>${netty-restful-gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.zhizuqiu</groupId>
+                <artifactId>netty-restful-fastjson</artifactId>
+                <version>${netty-restful-fastjson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.spullara.mustache.java</groupId>

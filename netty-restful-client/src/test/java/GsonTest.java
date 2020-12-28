@@ -1,16 +1,17 @@
-package com.github.zhizuqiu.example;
-
 import com.github.zhizuqiu.nettyrestfulclient.NettyRestClient;
 import com.github.zhizuqiu.nettyrestfulgson.GsonDecoder;
 import com.github.zhizuqiu.nettyrestfulgson.GsonEncoder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.Before;
+import org.junit.Test;
 
-public class CientTest {
+public class GsonTest {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static NettyIf nettyIf;
 
-    private static void initNettyIf() {
+    @Before
+    public void b() {
         nettyIf = NettyRestClient.builder()
                 .host("localhost")
                 .port(8083)
@@ -22,8 +23,9 @@ public class CientTest {
                 .target(NettyIf.class);
     }
 
-    public static void main(String[] args) throws Exception {
-        initNettyIf();
+    @Test
+    public void TestGson() throws Exception {
         System.out.println(nettyIf.config());
     }
+
 }
