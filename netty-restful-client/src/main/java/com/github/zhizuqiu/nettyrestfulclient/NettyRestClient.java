@@ -1,5 +1,7 @@
 package com.github.zhizuqiu.nettyrestfulclient;
 
+import com.github.zhizuqiu.nettyrestfulcommon.codec.Decoder;
+import com.github.zhizuqiu.nettyrestfulcommon.codec.Encoder;
 import com.github.zhizuqiu.nettyrestfulclient.netty.MethodHandler;
 import com.github.zhizuqiu.nettyrestfulclient.netty.NettyRestInvacationHandler;
 import com.github.zhizuqiu.nettyrestfulclient.netty.SynchronousMethodHandler;
@@ -23,6 +25,8 @@ import java.lang.reflect.Proxy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.github.zhizuqiu.nettyrestfulcommon.Util.checkNotNull;
+
 public class NettyRestClient {
 
     public static Builder builder() {
@@ -37,6 +41,18 @@ public class NettyRestClient {
         private long timeout = -1;
         private int maxFrameSize = 1024 * 100;
         private String preProxy = "";
+        private Decoder decoder;
+        private Encoder encoder;
+
+        public Builder encoder(Encoder encoder) {
+            this.encoder = encoder;
+            return this;
+        }
+
+        public Builder decoder(Decoder decoder) {
+            this.decoder = decoder;
+            return this;
+        }
 
         public Builder preProxy(String preProxy) {
             this.preProxy = preProxy;
@@ -101,11 +117,11 @@ public class NettyRestClient {
                     if (todoAnnotation != null) {
                         methodToHandler.put(method, new SynchronousMethodHandler(
                                 bootstrap,
-                                host,
-                                port,
-                                timeout,
-                                new Request(method, this.preProxy),
-                                new ResponsePromise(method.getAnnotatedReturnType().getType())
+                                this.host,
+                                this.port,
+                                this.timeout,
+                                new Request(method, this.preProxy, checkNotNull(this.encoder, "encoder")),
+                                new ResponsePromise(method.getAnnotatedReturnType().getType(), checkNotNull(this.decoder, "decoder"))
                         ));
                     }
                 }

@@ -21,12 +21,16 @@
             <artifactId>netty-all</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>com.github.zhizuqiu</groupId>
+            <artifactId>netty-restful-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.zhizuqiu</groupId>
-            <artifactId>netty-restful-common</artifactId>
+            <artifactId>netty-restful-gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

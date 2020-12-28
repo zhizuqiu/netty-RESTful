@@ -1,6 +1,6 @@
 package com.github.zhizuqiu.nettyrestfulclient.response;
 
-import com.google.gson.Gson;
+import com.github.zhizuqiu.nettyrestfulcommon.codec.Decoder;
 import io.netty.util.concurrent.Promise;
 
 import java.io.IOException;
@@ -10,10 +10,12 @@ import java.util.concurrent.TimeoutException;
 public class ResponsePromise {
     private Type type;
     private Promise<String> promise;
+    private Decoder decoder;
     protected Throwable exception;
 
-    public ResponsePromise(Type type) {
+    public ResponsePromise(Type type, Decoder decoder) {
         this.type = type;
+        this.decoder = decoder;
     }
 
     public void waitForPromiseSuccess() {
@@ -30,7 +32,7 @@ public class ResponsePromise {
         waitForPromiseSuccess();
 
         if (promise.getNow() != null) {
-            return new Gson().fromJson(promise.getNow(), type);
+            return decoder.decode(promise.getNow(), type);
         } else {
             if (this.exception instanceof IOException) {
                 throw (IOException) this.exception;

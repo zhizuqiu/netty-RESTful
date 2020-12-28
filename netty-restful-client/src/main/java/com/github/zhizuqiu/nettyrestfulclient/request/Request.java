@@ -1,5 +1,6 @@
 package com.github.zhizuqiu.nettyrestfulclient.request;
 
+import com.github.zhizuqiu.nettyrestfulcommon.codec.Encoder;
 import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
 import io.netty.handler.codec.http.HttpMethod;
 
@@ -8,10 +9,12 @@ import java.lang.reflect.Method;
 public class Request {
     private final Method method;
     private final String preProxy;
+    private final Encoder encoder;
 
-    public Request(Method method, String preProxy) {
+    public Request(Method method, String preProxy, Encoder encoder) {
         this.method = method;
         this.preProxy = preProxy;
+        this.encoder = encoder;
     }
 
     public HttpMethod getHttpMethod() {
@@ -42,4 +45,11 @@ public class Request {
         return method;
     }
 
+    public String getPreProxy() {
+        return preProxy;
+    }
+
+    public Encoder getEncoder() {
+        return encoder;
+    }
 }

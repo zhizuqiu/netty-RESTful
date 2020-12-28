@@ -4,7 +4,6 @@ import com.github.zhizuqiu.nettyrestfulclient.request.Request;
 import com.github.zhizuqiu.nettyrestfulclient.response.ResponsePromise;
 import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
 import com.github.zhizuqiu.nettyrestfulcommon.annotation.Param;
-import com.google.gson.Gson;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -37,7 +36,6 @@ public class SynchronousMethodHandler implements MethodHandler {
 
     private final Request visionRequest;
     private final ResponsePromise responsePromise;
-
 
     public SynchronousMethodHandler(Bootstrap bootstrap, String host, int port, long timeout, Request visionRequest, ResponsePromise responsePromise) {
         this.bootstrap = bootstrap;
@@ -119,7 +117,7 @@ public class SynchronousMethodHandler implements MethodHandler {
                     HttpVersion.HTTP_1_1,
                     visionRequest.getHttpMethod(),
                     tmplUrl(annotationItemList, visionRequest.getUrl(), argv),
-                    Unpooled.wrappedBuffer(new Gson().toJson(param).getBytes(StandardCharsets.UTF_8))
+                    Unpooled.wrappedBuffer(visionRequest.getEncoder().encode(param).getBytes(StandardCharsets.UTF_8))
             );
         }
 
