@@ -1,7 +1,7 @@
 package com.github.zhizuqiu.nettyrestfulserver.tools;
 
 import com.github.zhizuqiu.nettyrestfulserver.store.MethodData;
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;

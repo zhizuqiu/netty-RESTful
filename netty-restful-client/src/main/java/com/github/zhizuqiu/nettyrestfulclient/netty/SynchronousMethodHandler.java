@@ -2,8 +2,8 @@ package com.github.zhizuqiu.nettyrestfulclient.netty;
 
 import com.github.zhizuqiu.nettyrestfulclient.request.Request;
 import com.github.zhizuqiu.nettyrestfulclient.response.ResponsePromise;
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.Param;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.Param;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;

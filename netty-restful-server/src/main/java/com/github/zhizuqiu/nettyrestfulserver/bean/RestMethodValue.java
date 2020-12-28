@@ -1,6 +1,6 @@
 package com.github.zhizuqiu.nettyrestfulserver.bean;
 
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
 
 import java.lang.reflect.Method;
 

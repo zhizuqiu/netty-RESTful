@@ -1,13 +1,13 @@
 package com.github.zhizuqiu.nettyrestfulclient;
 
-import com.github.zhizuqiu.nettyrestfulcommon.codec.Decoder;
-import com.github.zhizuqiu.nettyrestfulcommon.codec.Encoder;
+import com.github.zhizuqiu.nettyrestfulcore.codec.Decoder;
+import com.github.zhizuqiu.nettyrestfulcore.codec.Encoder;
 import com.github.zhizuqiu.nettyrestfulclient.netty.MethodHandler;
 import com.github.zhizuqiu.nettyrestfulclient.netty.NettyRestInvacationHandler;
 import com.github.zhizuqiu.nettyrestfulclient.netty.SynchronousMethodHandler;
 import com.github.zhizuqiu.nettyrestfulclient.request.Request;
 import com.github.zhizuqiu.nettyrestfulclient.response.ResponsePromise;
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -25,7 +25,7 @@ import java.lang.reflect.Proxy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.github.zhizuqiu.nettyrestfulcommon.Util.checkNotNull;
+import static com.github.zhizuqiu.nettyrestfulcore.Util.checkNotNull;
 
 public class NettyRestClient {
 

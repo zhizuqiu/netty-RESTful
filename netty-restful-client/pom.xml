@@ -22,15 +22,15 @@
         </dependency>
         <dependency>
             <groupId>com.github.zhizuqiu</groupId>
-            <artifactId>netty-restful-common</artifactId>
+            <artifactId>netty-restful-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.zhizuqiu</groupId>
-            <artifactId>netty-restful-gson</artifactId>
+            <artifactId>netty-restful-codec-gson</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.zhizuqiu</groupId>
-            <artifactId>netty-restful-fastjson</artifactId>
+            <artifactId>netty-restful-codec-fastjson</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

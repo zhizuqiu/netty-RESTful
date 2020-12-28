@@ -117,7 +117,7 @@ public class MethodData {
     }
 
     /**
-     * 根据path从templateMethodMap中获取模板参数，并填充到valuez中
+     * 根据path从templateMethodMap中获取模板参数，并填充到value中
      */
     public static String template(String path, String value) {
         TemplateMethodValue templateMethodValue = getTemplateMethod(path);

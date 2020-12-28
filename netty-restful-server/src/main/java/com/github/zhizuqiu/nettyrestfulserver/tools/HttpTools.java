@@ -1,6 +1,6 @@
 package com.github.zhizuqiu.nettyrestfulserver.tools;
 
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;

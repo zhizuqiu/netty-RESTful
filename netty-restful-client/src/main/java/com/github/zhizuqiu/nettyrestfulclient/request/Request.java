@@ -1,7 +1,7 @@
 package com.github.zhizuqiu.nettyrestfulclient.request;
 
-import com.github.zhizuqiu.nettyrestfulcommon.codec.Encoder;
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.codec.Encoder;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.lang.reflect.Method;

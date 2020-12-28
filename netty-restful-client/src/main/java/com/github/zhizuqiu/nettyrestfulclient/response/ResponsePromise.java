@@ -1,6 +1,6 @@
 package com.github.zhizuqiu.nettyrestfulclient.response;
 
-import com.github.zhizuqiu.nettyrestfulcommon.codec.Decoder;
+import com.github.zhizuqiu.nettyrestfulcore.codec.Decoder;
 import io.netty.util.concurrent.Promise;
 
 import java.io.IOException;

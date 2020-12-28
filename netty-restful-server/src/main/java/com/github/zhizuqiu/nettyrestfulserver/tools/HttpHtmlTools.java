@@ -20,7 +20,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class HttpHtmlTools {
 
-    private static InternalLogger logger = InternalLoggerFactory.getInstance(HttpHtmlTools.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(HttpHtmlTools.class);
 
     /**
      * html的处理方法，只有在not found时返回false，否则返回true

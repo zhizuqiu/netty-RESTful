@@ -26,12 +26,14 @@
         </dependency>
         <dependency>
             <groupId>com.github.zhizuqiu</groupId>
-            <artifactId>netty-restful-common</artifactId>
+            <artifactId>netty-restful-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>

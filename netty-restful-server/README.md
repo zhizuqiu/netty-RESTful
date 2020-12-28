@@ -1,6 +1,6 @@
 # netty-RESTful-server
 
-基于netty(4.1.15.Final)、Gson(2.8.2)和Mustache.java(0.9.5)实现的web框架。支持：
+基于netty、Gson和Mustache.java实现的web框架。支持：
 
 - RESTful 使用注解方式组织URL路由
 - WebSocket

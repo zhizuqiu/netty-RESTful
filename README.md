@@ -21,3 +21,35 @@ client
 [client modules](netty-restful-client)
 
 - RESTful 使用注解方式组织URL路由
+- JSON 自定义处理 
+
+core
+---
+
+[core modules](netty-restful-core)
+
+- Annotation
+- Codec
+- Exception
+- Util
+
+gson
+---
+
+[gson modules](netty-restful-codec-gson)
+
+- Gson Codec
+
+fastjson
+---
+
+[fastjson modules](netty-restful-codec-fastjson)
+
+- Fastjson Codec
+
+安装
+---
+
+```
+./install.sh
+```

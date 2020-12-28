@@ -10,11 +10,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>netty-restful-common</module>
+        <module>netty-restful-core</module>
         <module>netty-restful-server</module>
         <module>netty-restful-client</module>
-        <module>netty-restful-gson</module>
-        <module>netty-restful-fastjson</module>
+        <module>netty-restful-codec-gson</module>
+        <module>netty-restful-codec-fastjson</module>
     </modules>
 
     <properties>
@@ -24,9 +24,9 @@
         <maven-compiler-plugin.target>1.8</maven-compiler-plugin.target>
         <netty-all.version>4.1.42.Final</netty-all.version>
         <gson.version>2.8.2</gson.version>
-        <netty-restful-common.version>2.0-SNAPSHOT</netty-restful-common.version>
-        <netty-restful-gson.version>2.0-SNAPSHOT</netty-restful-gson.version>
-        <netty-restful-fastjson.version>2.0-SNAPSHOT</netty-restful-fastjson.version>
+        <netty-restful-core.version>2.0-SNAPSHOT</netty-restful-core.version>
+        <netty-restful-codec-gson.version>2.0-SNAPSHOT</netty-restful-codec-gson.version>
+        <netty-restful-codec-fastjson.version>2.0-SNAPSHOT</netty-restful-codec-fastjson.version>
         <mustache.version>0.9.5</mustache.version>
         <junit.version>4.13.1</junit.version>
     </properties>
@@ -45,18 +45,18 @@
             </dependency>
             <dependency>
                 <groupId>com.github.zhizuqiu</groupId>
-                <artifactId>netty-restful-common</artifactId>
-                <version>${netty-restful-common.version}</version>
+                <artifactId>netty-restful-core</artifactId>
+                <version>${netty-restful-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.zhizuqiu</groupId>
-                <artifactId>netty-restful-gson</artifactId>
-                <version>${netty-restful-gson.version}</version>
+                <artifactId>netty-restful-codec-gson</artifactId>
+                <version>${netty-restful-codec-gson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.zhizuqiu</groupId>
-                <artifactId>netty-restful-fastjson</artifactId>
-                <version>${netty-restful-fastjson.version}</version>
+                <artifactId>netty-restful-codec-fastjson</artifactId>
+                <version>${netty-restful-codec-fastjson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.spullara.mustache.java</groupId>

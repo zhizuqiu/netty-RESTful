@@ -1,7 +1,7 @@
 package com.github.zhizuqiu.nettyrestfulserver.bean;
 
 
-import com.github.zhizuqiu.nettyrestfulcommon.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
 
 /**
  * 应用启动时，扫描注解后存入Map的key
