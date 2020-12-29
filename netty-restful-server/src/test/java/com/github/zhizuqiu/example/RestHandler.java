@@ -1,15 +1,15 @@
 package com.github.zhizuqiu.example;
 
-import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpHandler;
-import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
-import com.github.zhizuqiu.nettyrestfulcore.annotation.TemplateMap;
-import com.github.zhizuqiu.nettyrestfulserver.bean.RestMethodKey;
-import com.github.zhizuqiu.nettyrestfulserver.store.MethodData;
-import com.github.zhizuqiu.nettyrestfulserver.tools.PublicTools;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.github.zhizuqiu.example.template.TemplateBody;
 import com.github.zhizuqiu.example.template.TemplateObject;
+import com.github.zhizuqiu.nettyrestful.core.annotation.HttpHandler;
+import com.github.zhizuqiu.nettyrestful.core.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestful.core.annotation.TemplateMap;
+import com.github.zhizuqiu.nettyrestful.server.bean.RestMethodKey;
+import com.github.zhizuqiu.nettyrestful.server.store.MethodData;
+import com.github.zhizuqiu.nettyrestful.server.tools.PublicTools;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.http.*;
 
 import java.lang.reflect.Modifier;

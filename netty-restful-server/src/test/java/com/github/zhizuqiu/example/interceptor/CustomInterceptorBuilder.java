@@ -1,7 +1,7 @@
 package com.github.zhizuqiu.example.interceptor;
 
-import com.github.zhizuqiu.nettyrestfulserver.interceptor.AbstractInterceptor;
-import com.github.zhizuqiu.nettyrestfulserver.interceptor.InterceptorBuilder;
+import com.github.zhizuqiu.nettyrestful.server.interceptor.AbstractInterceptor;
+import com.github.zhizuqiu.nettyrestful.server.interceptor.InterceptorBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

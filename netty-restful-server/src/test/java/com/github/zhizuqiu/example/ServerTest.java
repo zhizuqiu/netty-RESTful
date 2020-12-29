@@ -1,7 +1,9 @@
 package com.github.zhizuqiu.example;
 
 import com.github.zhizuqiu.example.interceptor.CustomInterceptorBuilder;
-import com.github.zhizuqiu.nettyrestfulserver.NettyRestServer;
+import com.github.zhizuqiu.nettyrestful.server.NettyRestServer;
+import com.github.zhizuqiu.nettyrestful.template.mustache.MustacheTemplate;
+import com.github.zhizuqiu.nettyrestful.template.thymeleaf.ThymeleafTemplate;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -23,10 +25,11 @@ public class ServerTest {
                 .setWorkThreadCount(WORKTHREADCOUNT)
                 .setPackages("com.github.zhizuqiu.example")
                 .setStaticFilePath("netty-restful-server/resources")
-                .setWebsocketHandler("/echo", WebSocketFrameHandler.class)
+                .setWebsocketHandler("/echo", new WebSocketFrameHandler())
                 .setRestCallback((bossGroup, workerGroup) -> logger.info("callback"))
-                .setInterceptorBuilder(CustomInterceptorBuilder.class)
+                .setInterceptorBuilder(new CustomInterceptorBuilder())
                 .setRestfulPreProxy("/api", "/api2")
+                .setTemplateList(new MustacheTemplate(), new ThymeleafTemplate())
                 .build();
         try {
             nettyRestServer.run();

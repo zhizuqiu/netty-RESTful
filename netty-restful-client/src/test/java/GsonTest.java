@@ -1,6 +1,6 @@
-import com.github.zhizuqiu.nettyrestfulclient.NettyRestClient;
-import com.github.zhizuqiu.nettyrestfulgson.GsonDecoder;
-import com.github.zhizuqiu.nettyrestfulgson.GsonEncoder;
+import com.github.zhizuqiu.nettyrestful.client.NettyRestClient;
+import com.github.zhizuqiu.nettyrestful.codec.gson.GsonDecoder;
+import com.github.zhizuqiu.nettyrestful.codec.gson.GsonEncoder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Before;

@@ -1,9 +1,9 @@
 package com.github.zhizuqiu.example.interceptor;
 
-import com.github.zhizuqiu.nettyrestfulserver.interceptor.AbstractInterceptor;
-import com.github.zhizuqiu.nettyrestfulserver.interceptor.InterceptorResponse;
-import com.github.zhizuqiu.nettyrestfulserver.tools.HttpTools;
-import com.github.zhizuqiu.nettyrestfulserver.tools.RequestParser;
+import com.github.zhizuqiu.nettyrestful.server.interceptor.AbstractInterceptor;
+import com.github.zhizuqiu.nettyrestful.server.interceptor.InterceptorResponse;
+import com.github.zhizuqiu.nettyrestful.server.tools.HttpTools;
+import com.github.zhizuqiu.nettyrestful.server.tools.RequestParser;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;

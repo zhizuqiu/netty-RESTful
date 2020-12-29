@@ -6,7 +6,7 @@
 
     <groupId>com.github.zhizuqiu</groupId>
     <artifactId>netty-restful</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -15,6 +15,8 @@
         <module>netty-restful-client</module>
         <module>netty-restful-codec-gson</module>
         <module>netty-restful-codec-fastjson</module>
+        <module>netty-restful-template-mustache</module>
+        <module>netty-restful-template-thymeleaf</module>
     </modules>
 
     <properties>
@@ -22,12 +24,17 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-compiler-plugin.source>1.8</maven-compiler-plugin.source>
         <maven-compiler-plugin.target>1.8</maven-compiler-plugin.target>
+        <!-- 让子module统一继承的版本 -->
+        <netty-restful-core.version>3.0-SNAPSHOT</netty-restful-core.version>
+        <netty-restful-codec-gson.version>3.0-SNAPSHOT</netty-restful-codec-gson.version>
+        <netty-restful-codec-fastjson.version>3.0-SNAPSHOT</netty-restful-codec-fastjson.version>
+        <netty-restful-template-mustache.version>3.0-SNAPSHOT</netty-restful-template-mustache.version>
+        <netty-restful-template-thymeleaf.version>3.0-SNAPSHOT</netty-restful-template-thymeleaf.version>
         <netty-all.version>4.1.42.Final</netty-all.version>
         <gson.version>2.8.2</gson.version>
-        <netty-restful-core.version>2.0-SNAPSHOT</netty-restful-core.version>
-        <netty-restful-codec-gson.version>2.0-SNAPSHOT</netty-restful-codec-gson.version>
-        <netty-restful-codec-fastjson.version>2.0-SNAPSHOT</netty-restful-codec-fastjson.version>
+        <fastjson.version>1.2.75</fastjson.version>
         <mustache.version>0.9.5</mustache.version>
+        <thymeleaf.version>3.0.12.RELEASE</thymeleaf.version>
         <junit.version>4.13.1</junit.version>
     </properties>
 
@@ -39,9 +46,9 @@
                 <version>${netty-all.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.zhizuqiu</groupId>
@@ -54,9 +61,24 @@
                 <version>${netty-restful-codec-gson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.zhizuqiu</groupId>
                 <artifactId>netty-restful-codec-fastjson</artifactId>
                 <version>${netty-restful-codec-fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.zhizuqiu</groupId>
+                <artifactId>netty-restful-template-mustache</artifactId>
+                <version>${netty-restful-template-mustache.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.spullara.mustache.java</groupId>
@@ -64,10 +86,16 @@
                 <version>${mustache.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <groupId>com.github.zhizuqiu</groupId>
+                <artifactId>netty-restful-template-thymeleaf</artifactId>
+                <version>${netty-restful-template-thymeleaf.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf</artifactId>
+                <version>${thymeleaf.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

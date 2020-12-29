@@ -1,5 +1,6 @@
 package com.github.zhizuqiu.example;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -7,6 +8,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 
 import java.util.Locale;
 
+@ChannelHandler.Sharable
 public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
     @Override
@@ -28,9 +30,9 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
     }
 
-    class MyThread implements Runnable {
+    static class MyThread implements Runnable {
 
-        private ChannelHandlerContext ctx;
+        private final ChannelHandlerContext ctx;
 
         public MyThread(ChannelHandlerContext ctx) {
             this.ctx = ctx;

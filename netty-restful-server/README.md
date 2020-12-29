@@ -10,7 +10,7 @@
 - 支持restful proxy
 - 支持静态文件自定义处理
 
-示例代码在[com.github.zhizuqiu.example](src/main/java/com/github/zhizuqiu/example)包下。
+示例代码在[com.github.zhizuqiu.example](src/test/java/com/github/zhizuqiu/example)包下。
 其中：
 - ServerTest  程序入口类
 - RestHandler  类似于spring mvc中的Controller类
@@ -93,7 +93,7 @@ public TestMessage post(String jsonParam, DefaultFullHttpResponse response) {
     
 ```
 
-更多方式请看示例代码 [RestHandler.java](src/main/java/com/github/zhizuqiu/example/RestHandler.java)
+更多方式请看示例代码 [RestHandler.java](src/test/java/com/github/zhizuqiu/example/RestHandler.java)
 
 2.websocket
 
@@ -102,7 +102,7 @@ public TestMessage post(String jsonParam, DefaultFullHttpResponse response) {
 .setWebsocketHandler("/echo", WebSocketFrameHandler.class)
 ```
 
-定义handler: [WebSocketFrameHandler.java](src/main/java/com/github/zhizuqiu/example/WebSocketFrameHandler.java)
+定义handler: [WebSocketFrameHandler.java](src/test/java/com/github/zhizuqiu/example/WebSocketFrameHandler.java)
 
 3.静态文件服务器
 ```
@@ -161,11 +161,11 @@ public TemplateObject test() {
 
 包括前置和后置拦截器
 
-实现 [AbstractInterceptor](src/main/java/com/github/zhizuqiu/nettyrestfulserver/interceptor/AbstractInterceptor.java) 抽象类，来定义拦截器
+实现 [AbstractInterceptor](src/main/java/com/github/zhizuqiu/nettyrestful/server/interceptor/AbstractInterceptor.java) 抽象类，来定义拦截器
 
-实现 [InterceptorBuilder](src/main/java/com/github/zhizuqiu/nettyrestfulserver/interceptor/InterceptorBuilder.java) 接口，来装配拦截器
+实现 [InterceptorBuilder](src/main/java/com/github/zhizuqiu/nettyrestful/server/interceptor/InterceptorBuilder.java) 接口，来装配拦截器
 
-详见示例 [CustomInterceptorBuilder.java](src/main/java/com/github/zhizuqiu/example/interceptor/CustomInterceptorBuilder.java)
+详见示例 [CustomInterceptorBuilder.java](src/test/java/com/github/zhizuqiu/example/interceptor/CustomInterceptorBuilder.java)
 
 6.restful proxy
 
@@ -187,7 +187,7 @@ Install
 2.add this lib to your mvn repository.
 
 ```
-mvn install:install-file -Dfile=netty-restful-server-2.0-SNAPSHOT.jar -DgroupId=com.github.zhizuqiu -DartifactId=netty-restful-server -Dversion=2.0-SNAPSHOT -Dpackaging=jar
+mvn install:install-file -Dfile=netty-restful-server-3.0-SNAPSHOT.jar -DgroupId=com.github.zhizuqiu -DartifactId=netty-restful-server -Dversion=3.0-SNAPSHOT -Dpackaging=jar
 ```
 
 3.and include dependencies:
@@ -196,6 +196,6 @@ mvn install:install-file -Dfile=netty-restful-server-2.0-SNAPSHOT.jar -DgroupId=
 <dependency>
     <groupId>com.github.zhizuqiu</groupId>
     <artifactId>netty-restful-server</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
 </dependency>
 ```

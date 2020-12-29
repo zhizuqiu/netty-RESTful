@@ -1,4 +1,4 @@
-import com.github.zhizuqiu.nettyrestfulcore.annotation.HttpMap;
+import com.github.zhizuqiu.nettyrestful.core.annotation.HttpMap;
 
 import java.util.Map;
 
