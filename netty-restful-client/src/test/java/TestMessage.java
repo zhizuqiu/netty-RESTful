@@ -1,5 +1,3 @@
-package com.github.zhizuqiu.example;
-
 import com.google.gson.annotations.Expose;
 
 public class TestMessage {

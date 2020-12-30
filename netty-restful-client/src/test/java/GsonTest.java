@@ -14,9 +14,9 @@ public class GsonTest {
     public void b() {
         nettyIf = NettyRestClient.builder()
                 .host("localhost")
-                .port(8083)
-                .preProxy("/test")
-                .timeout(5)
+                .port(80)
+                // .preProxy("/test")
+                // .timeout(5)
                 .maxFrameSize(1024 * 100)
                 .encoder(new GsonEncoder(GSON))
                 .decoder(new GsonDecoder(GSON))
@@ -25,7 +25,11 @@ public class GsonTest {
 
     @Test
     public void TestGson() throws Exception {
-        System.out.println(nettyIf.config());
+        System.out.println(nettyIf.getData("name_1"));
     }
 
+    @Test
+    public void postJson() throws Exception {
+        System.out.println(nettyIf.postJson(new TestMessage("post", "group_1", "mess_1", "exception_1")));
+    }
 }

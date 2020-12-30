@@ -95,16 +95,6 @@ public class HttpRestfulTools {
                 response.setStatus(INTERNAL_SERVER_ERROR);
             }
 
-            Class returnType = method.getReturnType();
-            if (!"void".equals(returnType.getName())) {
-                if (re == null) {
-                    HttpTools.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR));
-                    return true;
-                }
-            } else {
-                re = "";
-            }
-
             // 转json
             if (httpMap.returnType() == HttpMap.ReturnType.APPLICATION_JSON) {
                 switch (httpMap.gsonExcludeType()) {

@@ -18,8 +18,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * Outputs Http message.
  */
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-    private List<String> restfulPreProxy;
-    private StaticFileHandler staticFileHandler;
+    private final List<String> restfulPreProxy;
+    private final StaticFileHandler staticFileHandler;
 
     public HttpHandler(List<String> restfulPreProxy, StaticFileHandler staticFileHandler) {
         this.restfulPreProxy = restfulPreProxy;

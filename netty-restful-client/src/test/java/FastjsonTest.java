@@ -22,7 +22,7 @@ public class FastjsonTest {
 
     @Test
     public void TestGson() throws Exception {
-        System.out.println(nettyIf.config());
+        System.out.println(nettyIf.getData("name_1"));
     }
 
 }
