@@ -64,7 +64,6 @@ public class RequestParser {
                 requestParams.put(key, value.get(0));
             }
         }
-
         // 是POST请求
         HttpPostRequestDecoder decoderPost = new HttpPostRequestDecoder(req);
         decoderPost.offer(req);

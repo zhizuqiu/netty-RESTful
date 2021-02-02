@@ -59,9 +59,15 @@ public class RestHandler {
      * 接受url?param1={value1}&param2={value2}
      */
     @HttpMap(path = "/getData")
-    public String getData(Map<String, String> mapParam, DefaultFullHttpResponse response) {
+    public String getData(Map<String, String> mapParam) {
         return mapParam.get("name");
     }
+
+    @HttpMap(path = "/getData2")
+    public String getData2(Map<String, String> mapParam, DefaultFullHttpResponse response) {
+        return mapParam.get("name");
+    }
+
 
     /**
      * 接受Json串，response可以设置http状态码
@@ -70,7 +76,23 @@ public class RestHandler {
             paramType = HttpMap.ParamType.JSON,
             returnType = HttpMap.ReturnType.APPLICATION_JSON,
             method = HttpMap.Method.POST)
-    public TestMessage post(String jsonParam, DefaultFullHttpResponse response) {
+    public TestMessage postJson(String jsonParam) {
+
+        System.out.printf(jsonParam);
+        TestMessage param = null;
+        try {
+            param = new Gson().fromJson(jsonParam, TestMessage.class);
+        } catch (JsonSyntaxException e) {
+        }
+
+        return param;
+    }
+
+    @HttpMap(path = "/postJson2",
+            paramType = HttpMap.ParamType.JSON,
+            returnType = HttpMap.ReturnType.APPLICATION_JSON,
+            method = HttpMap.Method.POST)
+    public TestMessage post2(String jsonParam, DefaultFullHttpResponse response) {
 
         System.out.printf(jsonParam);
         TestMessage param = null;
@@ -90,7 +112,24 @@ public class RestHandler {
             paramType = HttpMap.ParamType.FORM_DATA,
             returnType = HttpMap.ReturnType.APPLICATION_JSON,
             method = HttpMap.Method.POST)
-    public Object post(Map<String, String> mapParam, DefaultFullHttpResponse response) {
+    public Object postForm(Map<String, String> mapParam) {
+
+        System.out.printf(mapParam.toString());
+
+        TestMessage param = new TestMessage();
+
+        param.setType(mapParam.get("type"));
+        param.setGroup(mapParam.get("group"));
+        param.setMessage(mapParam.get("message"));
+
+        return param;
+    }
+
+    @HttpMap(path = "/postForm2",
+            paramType = HttpMap.ParamType.FORM_DATA,
+            returnType = HttpMap.ReturnType.APPLICATION_JSON,
+            method = HttpMap.Method.POST)
+    public Object postForm2(Map<String, String> mapParam, DefaultFullHttpResponse response) {
 
         System.out.printf(mapParam.toString());
 

@@ -22,6 +22,7 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -88,46 +89,20 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
         }
 
         if (restMethodValue != null) {
+            HttpMap httpMap = restMethodValue.getHttpMap();
+
+            Method method = restMethodValue.getMethod();
+            Object restHandler = restMethodValue.getInstance();
+            // getJsonParam在getParam之前
+            String jsonParam = RequestParser.getJsonParam(req);
+            Object param = RequestParser.getParam(req);
 
             FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
 
-            HttpMap httpMap = restMethodValue.getHttpMap();
-
-            String result;
-            Object re = null;
-            Object param;
-
-            if (httpMap.paramType() == HttpMap.ParamType.FORM_DATA || httpMap.paramType() == HttpMap.ParamType.URL_DATA) {
-                param = RequestParser.getParam(req);
-            } else if (httpMap.paramType() == HttpMap.ParamType.JSON) {
-                param = RequestParser.getJsonParam(req);
-            } else {
-                return HttpTools.getHttpResponse(req, new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR));
-            }
-
-            Method method = restMethodValue.getMethod();
-
-            try {
-                Object restHandler = restMethodValue.getInstance();
-                int paramCount = method.getParameterTypes().length;
-                if (paramCount == 0) {
-                    re = method.invoke(restHandler);
-                } else if (paramCount == 1) {
-                    re = method.invoke(restHandler, response);
-                } else if (paramCount == 2) {
-                    re = method.invoke(restHandler, param, response);
-                } else if (paramCount == 3) {
-                    re = method.invoke(restHandler, param, req, response);
-                }
-            } catch (IllegalAccessException e) {
-                LOGGER.error("IllegalAccessException:" + e.getMessage());
-                response.setStatus(INTERNAL_SERVER_ERROR);
-            } catch (InvocationTargetException e) {
-                LOGGER.error("InvocationTargetException:" + e.getMessage());
-                response.setStatus(INTERNAL_SERVER_ERROR);
-            }
+            Object re = invoke(method, restHandler, param, jsonParam, req, response);
 
             // 转json
+            String result;
             if (httpMap.returnType() == HttpMap.ReturnType.APPLICATION_JSON) {
                 switch (httpMap.gsonExcludeType()) {
                     case Expose:
@@ -147,7 +122,11 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
                         break;
                 }
             } else {
-                result = re.toString();
+                if (re != null) {
+                    result = re.toString();
+                } else {
+                    result = null;
+                }
             }
 
             //成功
@@ -156,6 +135,112 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
         } else {
             return null;
         }
+    }
+
+    /**
+     * method() OK
+     * <p>
+     * method(param) OK
+     * method(jsonParam) OK
+     * method(response) OK
+     * method(req) OK
+     * <p>
+     * method(param,response) OK
+     * method(jsonParam,response) OK
+     * method(param,req) OK
+     * method(jsonParam,req) OK
+     * method(param,jsonParam) OK
+     * method(jsonParam,param) OK
+     * <p>
+     * method(param,jsonParam,response) OK
+     * method(jsonParam,param,response) OK
+     * method(param,jsonParam,req) OK
+     * method(jsonParam,param,req) OK
+     * method(param,req,response) OK
+     * method(jsonParam,req,response) OK
+     * <p>
+     * method(param,jsonParam,req,response) OK
+     * method(jsonParam,param,req,response) OK
+     */
+    private Object invoke(Method method, Object restHandler, Object param, String jsonParam, FullHttpRequest req, FullHttpResponse response) {
+        Object re = null;
+        try {
+            Class[] cs = method.getParameterTypes();
+            int paramCount = method.getParameterTypes().length;
+            if (paramCount == 0) {
+                // method()
+                re = method.invoke(restHandler);
+            } else if (paramCount == 1) {
+                if (cs[0] == FullHttpResponse.class || cs[0] == DefaultFullHttpResponse.class) {
+                    // method(response)
+                    re = method.invoke(restHandler, response);
+                } else if (cs[0] == FullHttpRequest.class) {
+                    // method(req)
+                    re = method.invoke(restHandler, req);
+                } else if (cs[0] == String.class) {
+                    // method(jsonParam)
+                    re = method.invoke(restHandler, jsonParam);
+                } else {
+                    // method(param)
+                    re = method.invoke(restHandler, param);
+                }
+            } else if (paramCount == 2) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class) {
+                    // method(param,jsonParam)
+                    re = method.invoke(restHandler, param, jsonParam);
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class)) {
+                    // method(jsonParam,param)
+                    re = method.invoke(restHandler, jsonParam, param);
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
+                    // method(param,response)
+                    re = method.invoke(restHandler, param, response);
+                } else if (cs[0] == String.class && (cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
+                    // method(jsonParam,response)
+                    re = method.invoke(restHandler, jsonParam, response);
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == FullHttpRequest.class) {
+                    // method(param,req)
+                    re = method.invoke(restHandler, param, req);
+                } else if (cs[0] == String.class && cs[1] == FullHttpRequest.class) {
+                    // method(jsonParam,req)
+                    re = method.invoke(restHandler, jsonParam, req);
+                }
+            } else if (paramCount == 3) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                    // method(param,jsonParam,response)
+                    re = method.invoke(restHandler, param, jsonParam, response);
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                    // method(jsonParam,param,response)
+                    re = method.invoke(restHandler, jsonParam, param, response);
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && cs[2] == FullHttpRequest.class) {
+                    // method(param,jsonParam,req)
+                    re = method.invoke(restHandler, param, jsonParam, req);
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && cs[2] == FullHttpRequest.class) {
+                    // method(jsonParam,param,req)
+                    re = method.invoke(restHandler, jsonParam, param, req);
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == FullHttpRequest.class && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                    // method(param,req,response)
+                    re = method.invoke(restHandler, param, req, response);
+                } else if (cs[0] == String.class && cs[1] == FullHttpRequest.class && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                    // method(jsonParam,req,response)
+                    re = method.invoke(restHandler, jsonParam, req, response);
+                }
+            } else if (paramCount == 4) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && cs[2] == FullHttpRequest.class && (cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
+                    // method(param,jsonParam,req,response)
+                    re = method.invoke(restHandler, param, jsonParam, req, response);
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && cs[2] == FullHttpRequest.class && (cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
+                    // method(param,jsonParam,req,response)
+                    re = method.invoke(restHandler, param, jsonParam, req, response);
+                }
+            }
+        } catch (IllegalAccessException e) {
+            LOGGER.error("IllegalAccessException:" + e.getMessage());
+            response.setStatus(INTERNAL_SERVER_ERROR);
+        } catch (InvocationTargetException e) {
+            LOGGER.error("InvocationTargetException:" + e.getMessage());
+            response.setStatus(INTERNAL_SERVER_ERROR);
+        }
+        return re;
     }
 
 
