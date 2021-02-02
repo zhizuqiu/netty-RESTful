@@ -1,7 +1,9 @@
-package com.github.zhizuqiu.nettyrestful.server.tools;
+package com.github.zhizuqiu.nettyrestful.server.handler;
 
-import com.github.zhizuqiu.nettyrestful.server.handler.CustomStaticFileHandler;
 import com.github.zhizuqiu.nettyrestful.server.store.MethodData;
+import com.github.zhizuqiu.nettyrestful.server.tools.HttpTools;
+import com.github.zhizuqiu.nettyrestful.server.tools.MethodTool;
+import com.github.zhizuqiu.nettyrestful.server.tools.RequestParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -25,27 +27,47 @@ import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class HttpStaticFileTools {
+public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     private static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     private static final int HTTP_CACHE_SECONDS = 60;
 
+    private final CustomStaticFileHandler customStaticFileHandler;
+
+    public HttpStaticFileHandler(CustomStaticFileHandler customStaticFileHandler) {
+        this.customStaticFileHandler = customStaticFileHandler;
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
+        boolean hasDone = handle(ctx, req, this.customStaticFileHandler);
+        if (!hasDone) {
+            ctx.fireChannelRead(req.retain());
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
+    }
+
     /**
-     * static file的处理方法，只有在not found时返回false，否则返回true
+     * static file的处理方法，只有在not found时返回null，否则返回FullHttpResponse
      */
-    public static boolean handle(ChannelHandlerContext ctx, FullHttpRequest request, CustomStaticFileHandler customStaticFileHandler) throws Exception {
-        if (!request.decoderResult().isSuccess()) {
+    public boolean handle(ChannelHandlerContext ctx, FullHttpRequest req, CustomStaticFileHandler customStaticFileHandler) throws Exception {
+        if (!req.decoderResult().isSuccess()) {
             sendError(ctx, BAD_REQUEST);
             return true;
         }
 
-        if (request.method() != GET) {
+        if (req.method() != GET) {
             sendError(ctx, METHOD_NOT_ALLOWED);
             return true;
         }
 
-        String uri = "/" + MethodData.getConfig().getStaticFilePath() + request.uri();
+        String uri = "/" + MethodData.getConfig().getStaticFilePath() + req.uri();
         uri = RequestParser.getUrl(uri);
 
         final String path = sanitizeUri(uri);
@@ -80,7 +102,7 @@ public class HttpStaticFileTools {
         }
 
         // Cache Validation
-        String ifModifiedSince = request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE);
+        String ifModifiedSince = req.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE);
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
             SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
             Date ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince);
@@ -107,14 +129,14 @@ public class HttpStaticFileTools {
         HttpUtil.setContentLength(response, fileLength);
         setContentTypeHeader(response, file);
         setDateAndCacheHeaders(response, file);
-        if (HttpUtil.isKeepAlive(request)) {
+        if (HttpUtil.isKeepAlive(req)) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
 
         if (customStaticFileHandler != null) {
             FullHttpResponse res = customStaticFileHandler.customResponse(uri, raf, new DefaultFullHttpResponse(HTTP_1_1, OK));
             if (res != null) {
-                HttpTools.sendHttpResponse(ctx, request, res);
+                HttpTools.sendHttpResponse(ctx, req, res);
                 return true;
             }
         }
@@ -161,7 +183,7 @@ public class HttpStaticFileTools {
         });
 
         // Decide whether to close the connection or not.
-        if (!HttpUtil.isKeepAlive(request)) {
+        if (!HttpUtil.isKeepAlive(req)) {
             // Close the connection when the whole content is written out.
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);
         }
@@ -200,7 +222,13 @@ public class HttpStaticFileTools {
 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-\\._]?[^<>&\\\"]*");
 
-    private static void sendListing(ChannelHandlerContext ctx, File dir, String dirPath) {
+    private void sendListing(ChannelHandlerContext ctx, File dir, String dirPath) {
+        FullHttpResponse response = getListing(dir, dirPath);
+        // Close the connection as soon as the error message is sent.
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    private FullHttpResponse getListing(File dir, String dirPath) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=UTF-8");
 
@@ -264,25 +292,35 @@ public class HttpStaticFileTools {
         response.content().writeBytes(buffer);
         buffer.release();
 
+        return response;
+    }
+
+    private void sendRedirect(ChannelHandlerContext ctx, String newUri) {
+        FullHttpResponse response = getRedirect(newUri);
+
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    private static void sendRedirect(ChannelHandlerContext ctx, String newUri) {
+    private FullHttpResponse getRedirect(String newUri) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, FOUND);
         response.headers().set(HttpHeaderNames.LOCATION, newUri);
+        return response;
+    }
+
+
+    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+        FullHttpResponse response = getError(status);
 
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+    private FullHttpResponse getError(HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-
-        // Close the connection as soon as the error message is sent.
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        return response;
     }
 
     /**
@@ -290,12 +328,18 @@ public class HttpStaticFileTools {
      *
      * @param ctx Context
      */
-    private static void sendNotModified(ChannelHandlerContext ctx) {
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
-        setDateHeader(response);
+    private void sendNotModified(ChannelHandlerContext ctx) {
+        FullHttpResponse response = getNotModified();
 
         // Close the connection as soon as the error message is sent.
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    private FullHttpResponse getNotModified() {
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
+        setDateHeader(response);
+
+        return response;
     }
 
     /**

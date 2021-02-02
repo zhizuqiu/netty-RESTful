@@ -90,4 +90,28 @@ public class HttpTools {
             f.addListener(ChannelFutureListener.CLOSE);
         }
     }
+
+    /**
+     * 响应请求
+     */
+    public static FullHttpResponse getHttpResponse(FullHttpRequest req, FullHttpResponse res) {
+        // Generate an error page if response getStatus code is not OK (200).
+        if (res.status().code() != 200) {
+            ByteBuf buf = Unpooled.copiedBuffer(res.status().toString(), CharsetUtil.UTF_8);
+            res.content().writeBytes(buf);
+            buf.release();
+            HttpUtil.setContentLength(res, res.content().readableBytes());
+        }
+
+        boolean keepAlive = HttpUtil.isKeepAlive(req);
+        if (keepAlive) {
+            if (!req.protocolVersion().isKeepAliveDefault()) {
+                res.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+            }
+        } else {
+            // Tell the client we're going to close the connection.
+            res.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        }
+        return res;
+    }
 }

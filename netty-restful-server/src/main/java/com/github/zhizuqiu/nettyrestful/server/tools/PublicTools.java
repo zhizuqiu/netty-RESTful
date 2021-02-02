@@ -63,7 +63,6 @@ public class PublicTools {
         return value;
     }
 
-
     /**
      * 从HttpRequest中获取cookie
      */

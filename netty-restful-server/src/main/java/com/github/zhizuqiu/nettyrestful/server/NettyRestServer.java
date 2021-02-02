@@ -9,8 +9,8 @@ import com.github.zhizuqiu.nettyrestful.server.bean.ResourceValue;
 import com.github.zhizuqiu.nettyrestful.server.bean.RestMethodKey;
 import com.github.zhizuqiu.nettyrestful.server.bean.RestMethodValue;
 import com.github.zhizuqiu.nettyrestful.server.bean.TemplateMethodValue;
+import com.github.zhizuqiu.nettyrestful.server.handler.CustomStaticFileHandler;
 import com.github.zhizuqiu.nettyrestful.server.handler.RestCallback;
-import com.github.zhizuqiu.nettyrestful.server.handler.StaticFileHandler;
 import com.github.zhizuqiu.nettyrestful.server.initializer.RestfulServerInitializer;
 import com.github.zhizuqiu.nettyrestful.server.interceptor.InterceptorBuilder;
 import com.github.zhizuqiu.nettyrestful.server.store.Config;
@@ -48,7 +48,7 @@ public class NettyRestServer {
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private RestCallback restCallback;
-    private StaticFileHandler staticFileHandler;
+    private CustomStaticFileHandler customStaticFileHandler;
     private Config config = new Config();
     private String websocketPath;
     private ChannelHandler websocketHandler;
@@ -96,7 +96,7 @@ public class NettyRestServer {
                             websocketPath,
                             websocketHandler,
                             this.restfulPreProxy,
-                            this.staticFileHandler
+                            this.customStaticFileHandler
                     ));
 
             Channel ch = b.bind(port).sync().channel();
@@ -334,8 +334,8 @@ public class NettyRestServer {
             return this;
         }
 
-        public NettyRestServerBuilder setStaticFileHandler(StaticFileHandler staticFileHandler) {
-            nettyRestServer.setStaticFileHandler(staticFileHandler);
+        public NettyRestServerBuilder setStaticFileHandler(CustomStaticFileHandler customStaticFileHandler) {
+            nettyRestServer.setStaticFileHandler(customStaticFileHandler);
             return this;
         }
 
@@ -439,12 +439,12 @@ public class NettyRestServer {
         this.restCallback = restCallback;
     }
 
-    public StaticFileHandler getStaticFileHandler() {
-        return staticFileHandler;
+    public CustomStaticFileHandler getStaticFileHandler() {
+        return customStaticFileHandler;
     }
 
-    public void setStaticFileHandler(StaticFileHandler staticFileHandler) {
-        this.staticFileHandler = staticFileHandler;
+    public void setStaticFileHandler(CustomStaticFileHandler customStaticFileHandler) {
+        this.customStaticFileHandler = customStaticFileHandler;
     }
 
     public String getWebsocketPath() {

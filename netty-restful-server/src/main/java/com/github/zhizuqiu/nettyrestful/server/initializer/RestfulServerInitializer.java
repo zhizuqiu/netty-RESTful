@@ -1,7 +1,6 @@
 package com.github.zhizuqiu.nettyrestful.server.initializer;
 
-import com.github.zhizuqiu.nettyrestful.server.handler.HttpHandler;
-import com.github.zhizuqiu.nettyrestful.server.handler.StaticFileHandler;
+import com.github.zhizuqiu.nettyrestful.server.handler.*;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -22,14 +21,14 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
     private final String websocketPath;
     private final ChannelHandler websocketHandler;
     private final List<String> restfulPreProxy;
-    private final StaticFileHandler staticFileHandler;
+    private final CustomStaticFileHandler customStaticFileHandler;
 
-    public RestfulServerInitializer(SslContext sslCtx, String websocketPath, ChannelHandler websocketHandler, List<String> restfulPreProxy, StaticFileHandler staticFileHandler) {
+    public RestfulServerInitializer(SslContext sslCtx, String websocketPath, ChannelHandler websocketHandler, List<String> restfulPreProxy, CustomStaticFileHandler customStaticFileHandler) {
         this.sslCtx = sslCtx;
         this.websocketPath = websocketPath;
         this.websocketHandler = websocketHandler;
         this.restfulPreProxy = restfulPreProxy;
-        this.staticFileHandler = staticFileHandler;
+        this.customStaticFileHandler = customStaticFileHandler;
     }
 
     @Override
@@ -51,8 +50,12 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
             // Netty支持websocket
             pipeline.addLast(new WebSocketServerProtocolHandler(websocketPath, null, true));
         }
-        // http的handler
-        pipeline.addLast(new HttpHandler(this.restfulPreProxy, this.staticFileHandler));
+        // http handler
+        pipeline.addLast(new HttpPreHandler());
+        pipeline.addLast(new HttpRestfulHandler(this.restfulPreProxy));
+        pipeline.addLast(new HttpHtmlHandler());
+        pipeline.addLast(new HttpStaticFileHandler(this.customStaticFileHandler));
+        pipeline.addLast(new HttpNotFoundHandler());
         if (websocketPath != null) {
             // websocket的handler
             pipeline.addLast(websocketHandler);
