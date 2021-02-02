@@ -71,7 +71,7 @@ public class PublicTools {
         List<Map.Entry<String, String>> entries = req.headers().entries();
         System.out.println(entries);
         for (Map.Entry<String, String> entry : entries) {
-            if ("cookie".equals(entry.getKey())) {
+            if ("Cookie".equals(entry.getKey())) {
                 String value = entry.getValue();
                 if (value != null) {
                     String[] values = value.split(";");

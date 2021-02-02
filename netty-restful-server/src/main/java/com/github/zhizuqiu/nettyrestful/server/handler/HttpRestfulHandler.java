@@ -12,10 +12,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.*;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -171,10 +168,10 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 // method()
                 re = method.invoke(restHandler);
             } else if (paramCount == 1) {
-                if (cs[0] == FullHttpResponse.class || cs[0] == DefaultFullHttpResponse.class) {
+                if (cs[0] == HttpResponse.class || cs[0] == FullHttpResponse.class || cs[0] == DefaultFullHttpResponse.class) {
                     // method(response)
                     re = method.invoke(restHandler, response);
-                } else if (cs[0] == FullHttpRequest.class) {
+                } else if (cs[0] == HttpRequest.class || cs[0] == FullHttpRequest.class || cs[0] == DefaultFullHttpRequest.class) {
                     // method(req)
                     re = method.invoke(restHandler, req);
                 } else if (cs[0] == String.class) {
@@ -191,44 +188,44 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class)) {
                     // method(jsonParam,param)
                     re = method.invoke(restHandler, jsonParam, param);
-                } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
                     // method(param,response)
                     re = method.invoke(restHandler, param, response);
-                } else if (cs[0] == String.class && (cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
+                } else if (cs[0] == String.class && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
                     // method(jsonParam,response)
                     re = method.invoke(restHandler, jsonParam, response);
-                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == FullHttpRequest.class) {
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == HttpRequest.class || cs[1] == FullHttpRequest.class || cs[1] == DefaultFullHttpRequest.class)) {
                     // method(param,req)
                     re = method.invoke(restHandler, param, req);
-                } else if (cs[0] == String.class && cs[1] == FullHttpRequest.class) {
+                } else if (cs[0] == String.class && (cs[1] == HttpRequest.class || cs[1] == FullHttpRequest.class || cs[1] == DefaultFullHttpRequest.class)) {
                     // method(jsonParam,req)
                     re = method.invoke(restHandler, jsonParam, req);
                 }
             } else if (paramCount == 3) {
-                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
                     // method(param,jsonParam,response)
                     re = method.invoke(restHandler, param, jsonParam, response);
-                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
                     // method(jsonParam,param,response)
                     re = method.invoke(restHandler, jsonParam, param, response);
-                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && cs[2] == FullHttpRequest.class) {
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && (cs[2] == HttpRequest.class || cs[2] == FullHttpRequest.class || cs[2] == DefaultFullHttpRequest.class)) {
                     // method(param,jsonParam,req)
                     re = method.invoke(restHandler, param, jsonParam, req);
-                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && cs[2] == FullHttpRequest.class) {
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == HttpRequest.class || cs[2] == FullHttpRequest.class || cs[2] == DefaultFullHttpRequest.class)) {
                     // method(jsonParam,param,req)
                     re = method.invoke(restHandler, jsonParam, param, req);
-                } else if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == FullHttpRequest.class && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == HttpRequest.class || cs[1] == FullHttpRequest.class || cs[1] == DefaultFullHttpRequest.class) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
                     // method(param,req,response)
                     re = method.invoke(restHandler, param, req, response);
-                } else if (cs[0] == String.class && cs[1] == FullHttpRequest.class && (cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                } else if (cs[0] == String.class && (cs[1] == HttpRequest.class || cs[1] == FullHttpRequest.class || cs[1] == DefaultFullHttpRequest.class) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
                     // method(jsonParam,req,response)
                     re = method.invoke(restHandler, jsonParam, req, response);
                 }
             } else if (paramCount == 4) {
-                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && cs[2] == FullHttpRequest.class && (cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && cs[1] == String.class && (cs[2] == HttpRequest.class || cs[2] == FullHttpRequest.class || cs[2] == DefaultFullHttpRequest.class) && (cs[3] == HttpResponse.class || cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
                     // method(param,jsonParam,req,response)
                     re = method.invoke(restHandler, param, jsonParam, req, response);
-                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && cs[2] == FullHttpRequest.class && (cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
+                } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == HttpRequest.class || cs[2] == FullHttpRequest.class || cs[2] == DefaultFullHttpRequest.class) && (cs[3] == HttpResponse.class || cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
                     // method(param,jsonParam,req,response)
                     re = method.invoke(restHandler, param, jsonParam, req, response);
                 }
