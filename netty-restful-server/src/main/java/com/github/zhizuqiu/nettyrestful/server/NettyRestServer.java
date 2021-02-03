@@ -53,7 +53,6 @@ public class NettyRestServer {
     private String websocketPath;
     private ChannelHandler websocketHandler;
     private InterceptorBuilder interceptorBuilder;
-    private List<String> restfulPreProxy;
     private List<Template> templateList;
 
     public NettyRestServer() {
@@ -62,7 +61,6 @@ public class NettyRestServer {
         packages = new ArrayList<>();
         bossThreadCount = 2;
         workThreadCount = 4;
-        restfulPreProxy = new ArrayList<>();
         templateList = new ArrayList<>();
     }
 
@@ -95,7 +93,6 @@ public class NettyRestServer {
                             sslCtx,
                             websocketPath,
                             websocketHandler,
-                            this.restfulPreProxy,
                             this.customStaticFileHandler
                     ));
 
@@ -352,7 +349,7 @@ public class NettyRestServer {
 
         public NettyRestServerBuilder setRestfulPreProxy(String... proxy) {
             List<String> proxyTemp = new ArrayList<>(Arrays.asList(proxy));
-            nettyRestServer.setRestfulPreProxy(proxyTemp);
+            nettyRestServer.config.setRestfulPreProxy(proxyTemp);
             return this;
         }
 
@@ -397,14 +394,6 @@ public class NettyRestServer {
 
     public void setPackages(List<String> packages) {
         this.packages = packages;
-    }
-
-    public List<String> getRestfulPreProxy() {
-        return restfulPreProxy;
-    }
-
-    public void setRestfulPreProxy(List<String> restfulPreProxy) {
-        this.restfulPreProxy = restfulPreProxy;
     }
 
     public Integer getBossThreadCount() {

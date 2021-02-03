@@ -69,7 +69,6 @@ public class PublicTools {
     public static Map<String, String> getCookie(HttpRequest req) {
         Map<String, String> cookies = new HashMap<>();
         List<Map.Entry<String, String>> entries = req.headers().entries();
-        System.out.println(entries);
         for (Map.Entry<String, String> entry : entries) {
             if ("Cookie".equals(entry.getKey())) {
                 String value = entry.getValue();
@@ -93,7 +92,6 @@ public class PublicTools {
     public static String getValue(HttpRequest req, String key) {
         String str = "";
         List<Map.Entry<String, String>> entries = req.headers().entries();
-        System.out.println(entries);
         for (Map.Entry<String, String> entry : entries) {
             if (key.equals(entry.getKey())) {
                 str = entry.getValue();

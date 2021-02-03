@@ -19,6 +19,7 @@ server
 - 支持更改模板引擎
   - 目前提供 [Mustache](netty-restful-template-mustache)、[Thymeleaf](netty-restful-template-thymeleaf) 的简单实现
   - 通过实现 [Template](netty-restful-core/src/main/java/com/github/zhizuqiu/nettyrestful/core/template/Template.java) 接口，替换为其他模板引擎
+- 支持文件上传
 
 client
 ---

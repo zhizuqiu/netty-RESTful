@@ -362,4 +362,36 @@ public class MethodTool {
         }
         return suffix;
     }
+
+    public static String serializeString(HttpMap httpMap, Object re) {
+        // 转json
+        String result;
+        if (httpMap.returnType() == HttpMap.ReturnType.APPLICATION_JSON) {
+            switch (httpMap.gsonExcludeType()) {
+                case Expose:
+                    result = MethodTool.newGsonExcludeExpose().toJson(re);
+                    break;
+                case Modifier:
+                    result = MethodTool.newGsonExcludeModifier(httpMap.modifierType()).toJson(re);
+                    break;
+                case SkipFieldStartWith:
+                    result = MethodTool.newGsonExcludeStartsWithStr(httpMap.skipFieldStartWith()).toJson(re);
+                    break;
+                case Default:
+                    result = new Gson().toJson(re);
+                    break;
+                default:
+                    result = new Gson().toJson(re);
+                    break;
+            }
+        } else {
+            if (re != null) {
+                result = re.toString();
+            } else {
+                result = null;
+            }
+        }
+        return result;
+    }
+
 }

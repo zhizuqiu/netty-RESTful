@@ -1,14 +1,23 @@
 package com.github.zhizuqiu.nettyrestful.server.store;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Config {
     private String staticFilePath;
+    private List<String> restfulPreProxy;
 
     public Config() {
         staticFilePath = null;
+        restfulPreProxy = new ArrayList<>();
     }
 
-    public Config(String staticFilePath) {
-        this.staticFilePath = staticFilePath;
+    public List<String> getRestfulPreProxy() {
+        return restfulPreProxy;
+    }
+
+    public void setRestfulPreProxy(List<String> restfulPreProxy) {
+        this.restfulPreProxy = restfulPreProxy;
     }
 
     public String getStaticFilePath() {
@@ -23,6 +32,7 @@ public class Config {
     public String toString() {
         return "Config{" +
                 "staticFilePath='" + staticFilePath + '\'' +
+                ", restfulPreProxy=" + restfulPreProxy +
                 '}';
     }
 }

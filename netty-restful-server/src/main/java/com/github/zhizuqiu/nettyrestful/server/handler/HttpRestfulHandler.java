@@ -26,18 +26,12 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-    private final List<String> restfulPreProxy;
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(HttpRestfulHandler.class);
 
-
-    public HttpRestfulHandler(List<String> restfulPreProxy) {
-        this.restfulPreProxy = restfulPreProxy;
-    }
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
-        FullHttpResponse res = handle(req, this.restfulPreProxy);
+        FullHttpResponse res = handle(req);
         if (res != null) {
             boolean keepAlive = HttpUtil.isKeepAlive(req);
             ChannelFuture f = ctx.channel().writeAndFlush(res);
@@ -58,7 +52,7 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
     /**
      * restful的处理方法，只有在not found时返回null，否则返回FullHttpResponse
      */
-    public FullHttpResponse handle(FullHttpRequest req, List<String> restfulPreProxy) {
+    public FullHttpResponse handle(FullHttpRequest req) {
 
         String url = RequestParser.getUrl(req.uri());
 
@@ -67,23 +61,7 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 MethodTool.getParamTypeFromHeader(req.headers().get("Content-Type"))
         );
 
-        RestMethodValue restMethodValue = MethodData.getRestMethod(restMethodKey);
-
-        if (restMethodValue == null) {
-            for (String proxy : restfulPreProxy) {
-                if (url.startsWith(proxy)) {
-                    RestMethodValue restMethodValueTemp = MethodData.getRestMethod(
-                            new RestMethodKey(url.substring(proxy.length()),
-                                    MethodTool.getMethod(req.method()),
-                                    MethodTool.getParamTypeFromHeader(req.headers().get("Content-Type"))
-                            ));
-                    if (restMethodValueTemp != null) {
-                        restMethodValue = restMethodValueTemp;
-                        break;
-                    }
-                }
-            }
-        }
+        RestMethodValue restMethodValue = MethodData.getRestAndPreProxyMethod(restMethodKey);
 
         if (restMethodValue != null) {
             HttpMap httpMap = restMethodValue.getHttpMap();
@@ -98,33 +76,7 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
             Object re = invoke(method, restHandler, param, jsonParam, req, response);
 
-            // 转json
-            String result;
-            if (httpMap.returnType() == HttpMap.ReturnType.APPLICATION_JSON) {
-                switch (httpMap.gsonExcludeType()) {
-                    case Expose:
-                        result = MethodTool.newGsonExcludeExpose().toJson(re);
-                        break;
-                    case Modifier:
-                        result = MethodTool.newGsonExcludeModifier(httpMap.modifierType()).toJson(re);
-                        break;
-                    case SkipFieldStartWith:
-                        result = MethodTool.newGsonExcludeStartsWithStr(httpMap.skipFieldStartWith()).toJson(re);
-                        break;
-                    case Default:
-                        result = new Gson().toJson(re);
-                        break;
-                    default:
-                        result = new Gson().toJson(re);
-                        break;
-                }
-            } else {
-                if (re != null) {
-                    result = re.toString();
-                } else {
-                    result = null;
-                }
-            }
+            String result = MethodTool.serializeString(httpMap, re);
 
             //成功
             FullHttpResponse res = HttpTools.getFullHttpResponse(result, response, httpMap.returnType());

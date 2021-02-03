@@ -20,14 +20,12 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
     private final SslContext sslCtx;
     private final String websocketPath;
     private final ChannelHandler websocketHandler;
-    private final List<String> restfulPreProxy;
     private final CustomStaticFileHandler customStaticFileHandler;
 
-    public RestfulServerInitializer(SslContext sslCtx, String websocketPath, ChannelHandler websocketHandler, List<String> restfulPreProxy, CustomStaticFileHandler customStaticFileHandler) {
+    public RestfulServerInitializer(SslContext sslCtx, String websocketPath, ChannelHandler websocketHandler, CustomStaticFileHandler customStaticFileHandler) {
         this.sslCtx = sslCtx;
         this.websocketPath = websocketPath;
         this.websocketHandler = websocketHandler;
-        this.restfulPreProxy = restfulPreProxy;
         this.customStaticFileHandler = customStaticFileHandler;
     }
 
@@ -40,6 +38,7 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
         }
         // 对通信数据进行编解码
         pipeline.addLast(new HttpServerCodec());
+        pipeline.addLast(new HttpUploadServerHandler());
         // 把多个HTTP请求中的数据组装成一个
         pipeline.addLast(new HttpObjectAggregator(65536));
         // 用于处理大数据流
@@ -52,7 +51,7 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
         }
         // http handler
         pipeline.addLast(new HttpPreHandler());
-        pipeline.addLast(new HttpRestfulHandler(this.restfulPreProxy));
+        pipeline.addLast(new HttpRestfulHandler());
         pipeline.addLast(new HttpHtmlHandler());
         pipeline.addLast(new HttpStaticFileHandler(this.customStaticFileHandler));
         pipeline.addLast(new HttpNotFoundHandler());

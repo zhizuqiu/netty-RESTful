@@ -9,6 +9,7 @@
 - 支持拦截器
 - 支持restful proxy
 - 支持静态文件自定义处理
+- 支持文件上传
 
 示例代码在[com.github.zhizuqiu.example](src/test/java/com/github/zhizuqiu/example)包下。
 其中：

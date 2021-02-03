@@ -7,6 +7,7 @@ import com.github.zhizuqiu.nettyrestful.server.bean.RestMethodKey;
 import com.github.zhizuqiu.nettyrestful.server.bean.RestMethodValue;
 import com.github.zhizuqiu.nettyrestful.server.bean.TemplateMethodValue;
 import com.github.zhizuqiu.nettyrestful.server.interceptor.AbstractInterceptor;
+import com.github.zhizuqiu.nettyrestful.server.tools.MethodTool;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -114,6 +115,29 @@ public class MethodData {
 
     public static void setConfig(Config config) {
         MethodData.config = config;
+    }
+
+    /**
+     * 从REST_METHOD_MAP获取RestMethodValue，包括preProxy的
+     */
+    public static RestMethodValue getRestAndPreProxyMethod(RestMethodKey key) {
+        RestMethodValue restMethodValue = REST_METHOD_MAP.get(key);
+        if (restMethodValue == null) {
+            for (String proxy : config.getRestfulPreProxy()) {
+                if (key.getUrl().startsWith(proxy)) {
+                    RestMethodValue restMethodValueTemp = MethodData.getRestMethod(
+                            new RestMethodKey(key.getUrl().substring(proxy.length()),
+                                    key.getMethod(),
+                                    key.getParamType()
+                            ));
+                    if (restMethodValueTemp != null) {
+                        restMethodValue = restMethodValueTemp;
+                        break;
+                    }
+                }
+            }
+        }
+        return restMethodValue;
     }
 
     /**

@@ -11,8 +11,12 @@ import com.github.zhizuqiu.nettyrestful.server.tools.PublicTools;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.multipart.FileUpload;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
@@ -216,6 +220,35 @@ public class RestHandler {
                 "netty-restful-test",
                 new TemplateBody("hello, click me to hide!")
         );
+    }
+
+    @HttpMap(path = "/formpostmultipart",
+            paramType = HttpMap.ParamType.FORM_DATA,
+            returnType = HttpMap.ReturnType.APPLICATION_JSON,
+            method = HttpMap.Method.POST)
+    public Object formpostmultipart(Map<String, String> mapParam, FileUpload[] fileUploads) {
+
+        // Map<String, String> mapParam
+        System.out.println(mapParam.toString());
+
+        String path = (mapParam.get("Path") == null || mapParam.get("Path").equals("/")) ? "" : mapParam.get("Path");
+
+        // FileUpload[] fileUploads
+        for (FileUpload fileUpload : fileUploads) {
+            // System.out.println(fileUpload.isInMemory());
+            // System.out.println(fileUpload.getFilename());
+            File f = new File("data" + path + "/" + fileUpload.getFilename());
+            try {
+                System.out.println(fileUpload.renameTo(f));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        TestMessage param = new TestMessage();
+        param.setType(path);
+
+        return param;
     }
 
 }
