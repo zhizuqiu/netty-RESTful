@@ -387,10 +387,10 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         String suffix = MethodTool.getSuffix(file.getPath());
         String contentType = MethodData.suffixMapContentType.get(suffix);
         if (contentType != null) {
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType + "; charset=utf-8");
         } else {
             MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()) + "; charset=utf-8");
         }
     }
 }
