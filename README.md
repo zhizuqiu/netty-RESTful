@@ -74,3 +74,8 @@ thymeleaf
 ```
 ./install.sh
 ```
+
+JetBrains OS licenses
+---
+`netty-RESTful` had been developed with Java under the **free JetBrains Open Source license(s)** granted by JetBrains s.r.o., hence I would like to express my thanks here.
+![jetbrains logo](jetbrains.png)
