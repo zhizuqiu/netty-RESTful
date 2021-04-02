@@ -186,50 +186,6 @@ public class NettyRestServer {
 
                 if (todoAnnotation != null) {
 
-                    // 检查使用HttpMap注解的方法的参数是否合法
-                    Class[] paramTypeClasses = method.getParameterTypes();
-                    if (paramTypeClasses.length == 1) {
-                        if (!paramTypeClasses[0].getName().contains("HttpResponse")) {
-                            LOGGER.error("illegal method [" + methodName + "]:" + "must be HttpResponse, when param size=1");
-                        }
-                    } else if (paramTypeClasses.length == 2) {
-                        Class param1 = paramTypeClasses[0];
-                        Class param2 = paramTypeClasses[1];
-                        if (todoAnnotation.paramType() == HttpMap.ParamType.FORM_DATA || todoAnnotation.paramType() == HttpMap.ParamType.URL_DATA) {
-                            if (!param1.getName().contains("Map")) {
-                                LOGGER.error("illegal method [" + methodName + "]:" + "param[0] must be Map, when param size=2");
-                            }
-                        } else {
-                            if (!param1.getName().contains("String")) {
-                                LOGGER.error("illegal method [" + methodName + "]:" + "param[0] must be String, when param size=2");
-                            }
-                        }
-                        if (!param2.getName().contains("HttpResponse")) {
-                            LOGGER.error("illegal method [" + methodName + "]:" + "param[1] must be HttpResponse, when param size=2");
-                        }
-                    } else if (paramTypeClasses.length == 3) {
-                        Class param1 = paramTypeClasses[0];
-                        Class param2 = paramTypeClasses[1];
-                        Class param3 = paramTypeClasses[2];
-                        if (todoAnnotation.paramType() == HttpMap.ParamType.FORM_DATA || todoAnnotation.paramType() == HttpMap.ParamType.URL_DATA) {
-                            if (!param1.getName().contains("Map")) {
-                                LOGGER.error("illegal method [" + methodName + "]:" + "param[0] must be Map, when param size=3");
-                            }
-                        } else {
-                            if (!param1.getName().contains("String")) {
-                                LOGGER.error("illegal method [" + methodName + "]:" + "param[0] must be String, when param size=3");
-                            }
-                        }
-                        if (!param2.getName().contains("HttpRequest")) {
-                            LOGGER.error("illegal method [" + methodName + "]:" + "param[1] must be HttpRequest, when param size=3");
-                        }
-                        if (!param3.getName().contains("HttpResponse")) {
-                            LOGGER.error("illegal method [" + methodName + "]:" + "param[2] must be HttpResponse, when param size=3");
-                        }
-                    } else if (paramTypeClasses.length > 3) {
-                        LOGGER.error("illegal method [" + methodName + "]:" + "param size>2");
-                    }
-
                     RestMethodValue restMethodValue = new RestMethodValue();
                     restMethodValue.setHttpMap(todoAnnotation);
                     restMethodValue.setMethod(method);

@@ -6,42 +6,35 @@ import com.github.zhizuqiu.nettyrestful.server.store.MethodData;
 import com.github.zhizuqiu.nettyrestful.server.tools.HttpTools;
 import com.github.zhizuqiu.nettyrestful.server.tools.MethodTool;
 import com.github.zhizuqiu.nettyrestful.server.tools.RequestParser;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
-import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.handler.codec.http.multipart.*;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDecoderException;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
-import io.netty.util.CharsetUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+/**
+ * todo 不占用内存
+ */
 public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(HttpUploadServerHandler.class);
 
     private HttpRequest request;
     private final List<FileUpload> fileUploads = new ArrayList<>();
-    private final String FILEUPLOADARRAYNAME = "[Lio.netty.handler.codec.http.multipart.FileUpload;";
+    private final String FILE_UPLOAD_ARRAY_NAME = "[Lio.netty.handler.codec.http.multipart.FileUpload;";
     private RestMethodValue restMethodValue;
     private HttpData partialContent;
 
@@ -123,7 +116,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                 if (cs[0] == HttpResponse.class || cs[0] == FullHttpResponse.class || cs[0] == DefaultFullHttpResponse.class) {
                     // method(response)
                     re = method.invoke(restHandler, response);
-                } else if (FILEUPLOADARRAYNAME.equals(cs[0].getName())) {
+                } else if (FILE_UPLOAD_ARRAY_NAME.equals(cs[0].getName())) {
                     // method(fileUploads)
                     re = method.invoke(restHandler, (Object) fs);
                 } else {
@@ -131,24 +124,24 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                     re = method.invoke(restHandler, param);
                 }
             } else if (paramCount == 2) {
-                if ((cs[0] == Map.class || cs[0] == Object.class) && FILEUPLOADARRAYNAME.equals(cs[1].getName())) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && FILE_UPLOAD_ARRAY_NAME.equals(cs[1].getName())) {
                     // method(param,fileUploads)
                     re = method.invoke(restHandler, param, fs);
                 } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
                     // method(param,response)
                     re = method.invoke(restHandler, param, fs);
-                } else if (FILEUPLOADARRAYNAME.equals(cs[0].getName()) && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
+                } else if (FILE_UPLOAD_ARRAY_NAME.equals(cs[0].getName()) && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
                     // method(fileUploads,response)
                     re = method.invoke(restHandler, fs, response);
-                } else if (FILEUPLOADARRAYNAME.equals(cs[0].getName()) && (cs[1] == Map.class || cs[1] == Object.class)) {
+                } else if (FILE_UPLOAD_ARRAY_NAME.equals(cs[0].getName()) && (cs[1] == Map.class || cs[1] == Object.class)) {
                     // method(fileUploads,param)
                     re = method.invoke(restHandler, fs, param);
                 }
             } else if (paramCount == 3) {
-                if ((cs[0] == Map.class || cs[0] == Object.class) && FILEUPLOADARRAYNAME.equals(cs[1].getName()) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                if ((cs[0] == Map.class || cs[0] == Object.class) && FILE_UPLOAD_ARRAY_NAME.equals(cs[1].getName()) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
                     // method(param,fileUploads,response)
                     re = method.invoke(restHandler, param, fs, response);
-                } else if (FILEUPLOADARRAYNAME.equals(cs[0].getName()) && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
+                } else if (FILE_UPLOAD_ARRAY_NAME.equals(cs[0].getName()) && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == HttpResponse.class || cs[2] == FullHttpResponse.class || cs[2] == DefaultFullHttpResponse.class)) {
                     // method(fileUploads,param,response)
                     re = method.invoke(restHandler, fs, param, response);
                 }
