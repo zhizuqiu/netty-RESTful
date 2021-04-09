@@ -342,7 +342,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                     LOGGER.info(builder.toString());
                 } else {
                     builder.append(" ").append(partialContent.length()).append(" ");
-                    LOGGER.info(builder.toString());
+                    // LOGGER.info(builder.toString());
                 }
             }
         } catch (EndOfDataDecoderException e1) {
