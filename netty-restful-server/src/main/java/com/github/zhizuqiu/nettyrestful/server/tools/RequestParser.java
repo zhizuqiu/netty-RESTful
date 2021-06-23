@@ -1,5 +1,6 @@
 package com.github.zhizuqiu.nettyrestful.server.tools;
 
+import com.github.zhizuqiu.nettyrestful.server.handler.HttpUploadServerHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -64,18 +65,21 @@ public class RequestParser {
                 requestParams.put(key, value.get(0));
             }
         }
-        // 是POST请求
-        HttpPostRequestDecoder decoderPost = new HttpPostRequestDecoder(req);
-        decoderPost.offer(req);
-        List<InterfaceHttpData> parmList = decoderPost.getBodyHttpDatas();
-        for (InterfaceHttpData parm : parmList) {
-            Attribute data = (Attribute) parm;
-            try {
-                requestParams.put(data.getName(), data.getValue());
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (req.headers().get("Content-Type") != null && req.headers().get("Content-Type").contains("application/x-www-form-urlencoded")) {
+            // 是POST form请求
+            HttpPostRequestDecoder decoderPost = new HttpPostRequestDecoder(req);
+            decoderPost.offer(req);
+            List<InterfaceHttpData> parmList = decoderPost.getBodyHttpDatas();
+            for (InterfaceHttpData parm : parmList) {
+                try {
+                    Attribute data = (Attribute) parm;
+                    requestParams.put(data.getName(), data.getValue());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
         return requestParams;
     }
 

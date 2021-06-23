@@ -21,12 +21,14 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
     private final String websocketPath;
     private final ChannelHandler websocketHandler;
     private final CustomStaticFileHandler customStaticFileHandler;
+    private final Boolean enableUpload;
 
-    public RestfulServerInitializer(SslContext sslCtx, String websocketPath, ChannelHandler websocketHandler, CustomStaticFileHandler customStaticFileHandler) {
+    public RestfulServerInitializer(SslContext sslCtx, String websocketPath, ChannelHandler websocketHandler, CustomStaticFileHandler customStaticFileHandler, Boolean enableUpload) {
         this.sslCtx = sslCtx;
         this.websocketPath = websocketPath;
         this.websocketHandler = websocketHandler;
         this.customStaticFileHandler = customStaticFileHandler;
+        this.enableUpload = enableUpload;
     }
 
     @Override
@@ -38,7 +40,9 @@ public class RestfulServerInitializer extends ChannelInitializer<SocketChannel> 
         }
         // 对通信数据进行编解码
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpUploadServerHandler());
+        if (enableUpload) {
+            pipeline.addLast(new HttpUploadServerHandler());
+        }
         // 把多个HTTP请求中的数据组装成一个
         pipeline.addLast(new HttpObjectAggregator(65536));
         // 用于处理大数据流

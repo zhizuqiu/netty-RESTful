@@ -41,6 +41,11 @@
             <groupId>com.github.zhizuqiu</groupId>
             <artifactId>netty-restful-template-thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>1.2.2</version>
+        </dependency>
     </dependencies>
 
     <build>

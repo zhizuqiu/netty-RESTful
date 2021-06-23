@@ -30,6 +30,7 @@ public class ServerTest {
                 .setInterceptorBuilder(new CustomInterceptorBuilder())
                 .setRestfulPreProxy("/api", "/api2")
                 .setTemplateList(new MustacheTemplate(), new ThymeleafTemplate())
+                .setEnableUpload(true)
                 .build();
         try {
             nettyRestServer.run();

@@ -223,7 +223,7 @@ public class RestHandler {
     }
 
     @HttpMap(path = "/formpostmultipart",
-            paramType = HttpMap.ParamType.FORM_DATA,
+            paramType = HttpMap.ParamType.MULTIPART_FORM_DATA,
             returnType = HttpMap.ReturnType.APPLICATION_JSON,
             method = HttpMap.Method.POST)
     public Object formpostmultipart(Map<String, String> mapParam, FileUpload[] fileUploads) {

@@ -54,6 +54,7 @@ public class NettyRestServer {
     private ChannelHandler websocketHandler;
     private InterceptorBuilder interceptorBuilder;
     private List<Template> templateList;
+    private Boolean enableUpload;
 
     public NettyRestServer() {
         ssl = false;
@@ -62,6 +63,7 @@ public class NettyRestServer {
         bossThreadCount = 2;
         workThreadCount = 4;
         templateList = new ArrayList<>();
+        enableUpload = false;
     }
 
     public void run() throws Exception {
@@ -93,7 +95,8 @@ public class NettyRestServer {
                             sslCtx,
                             websocketPath,
                             websocketHandler,
-                            this.customStaticFileHandler
+                            this.customStaticFileHandler,
+                            enableUpload
                     ));
 
             Channel ch = b.bind(port).sync().channel();
@@ -315,6 +318,11 @@ public class NettyRestServer {
             return this;
         }
 
+        public NettyRestServerBuilder setEnableUpload(Boolean enableUpload) {
+            nettyRestServer.setEnableUpload(enableUpload);
+            return this;
+        }
+
         public NettyRestServer build() {
             return nettyRestServer;
         }
@@ -414,5 +422,13 @@ public class NettyRestServer {
 
     public void setInterceptorBuilder(InterceptorBuilder interceptorBuilder) {
         this.interceptorBuilder = interceptorBuilder;
+    }
+
+    public Boolean getEnableUpload() {
+        return enableUpload;
+    }
+
+    public void setEnableUpload(Boolean enableUpload) {
+        this.enableUpload = enableUpload;
     }
 }

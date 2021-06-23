@@ -47,8 +47,10 @@ public class MethodTool {
         if (header == null) {
             return HttpMap.ParamType.URL_DATA;
         }
-        if (header.contains("form-data")) {
+        if (header.contains("application/x-www-form-urlencoded")) {
             return HttpMap.ParamType.FORM_DATA;
+        } else if (header.contains("multipart/form-data")) {
+            return HttpMap.ParamType.MULTIPART_FORM_DATA;
         } else if (header.contains("application/json")) {
             return HttpMap.ParamType.JSON;
         } else {

@@ -19,6 +19,7 @@ public @interface HttpMap {
          */
         JSON,
         FORM_DATA,
+        MULTIPART_FORM_DATA,
         URL_DATA
     }
 
