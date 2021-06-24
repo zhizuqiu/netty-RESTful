@@ -7,14 +7,12 @@ import com.github.zhizuqiu.nettyrestful.server.tools.HttpTools;
 import com.github.zhizuqiu.nettyrestful.server.tools.MethodTool;
 import com.github.zhizuqiu.nettyrestful.server.tools.RequestParser;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.*;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDecoderException;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -30,7 +28,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 /**
  * todo 不占用内存
  */
-public class HttpUploadServerHandler extends ChannelInboundHandlerAdapter {
+public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(HttpUploadServerHandler.class);
 
@@ -63,33 +61,25 @@ public class HttpUploadServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        boolean release = true;
-        try {
-            HandleResult result = handle((HttpObject) msg);
-            switch (result.result) {
-                case NEXT:
-                    release = false;
-                    ctx.fireChannelRead(msg);
-                    break;
-                case CONTINUE:
-                    break;
-                case END:
-                    Object re = invoke(result.response);
-                    String str = MethodTool.serializeString(restMethodValue.getHttpMap(), re);
-                    FullHttpResponse res = HttpTools.getFullHttpResponse(str, result.response, restMethodValue.getHttpMap().returnType());
-                    HttpTools.sendHttpResponse(ctx, request, res, false);
-                    reset();
-                    break;
-                case EXCEPTION:
-                    HttpTools.sendHttpResponse(ctx, request, result.response, true);
-                    break;
-                default:
-            }
-        } finally {
-            if (release) {
-                ReferenceCountUtil.release(msg);
-            }
+    public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+        HandleResult result = handle(msg);
+        switch (result.result) {
+            case NEXT:
+                ctx.fireChannelRead(msg);
+                break;
+            case CONTINUE:
+                break;
+            case END:
+                Object re = invoke(result.response);
+                String str = MethodTool.serializeString(restMethodValue.getHttpMap(), re);
+                FullHttpResponse res = HttpTools.getFullHttpResponse(str, result.response, restMethodValue.getHttpMap().returnType());
+                HttpTools.sendHttpResponse(ctx, request, res, false);
+                reset();
+                break;
+            case EXCEPTION:
+                HttpTools.sendHttpResponse(ctx, request, result.response, true);
+                break;
+            default:
         }
     }
 
