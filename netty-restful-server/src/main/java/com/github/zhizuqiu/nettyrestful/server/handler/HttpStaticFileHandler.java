@@ -190,8 +190,6 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         return true;
     }
 
-    private static final Pattern INSECURE_URI = Pattern.compile(".*[<>&\"].*");
-
     private static String sanitizeUri(String uri) {
         // Decode the path.
         try {
@@ -211,8 +209,7 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         // You will have to do something serious in the production environment.
         if (uri.contains(File.separator + '.') ||
                 uri.contains('.' + File.separator) ||
-                uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ||
-                INSECURE_URI.matcher(uri).matches()) {
+                uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
             return null;
         }
 
