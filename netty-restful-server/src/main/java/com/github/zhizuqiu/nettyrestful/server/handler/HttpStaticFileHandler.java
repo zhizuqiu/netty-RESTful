@@ -129,6 +129,7 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         HttpUtil.setContentLength(response, fileLength);
         setContentTypeHeader(response, file);
         setDateAndCacheHeaders(response, file);
+        setFileNameHeaders(response, file);
         if (HttpUtil.isKeepAlive(req)) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
@@ -209,7 +210,7 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         // You will have to do something serious in the production environment.
         if (uri.contains(File.separator + '.') ||
                 uri.contains('.' + File.separator) ||
-                uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
+                uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.') {
             return null;
         }
 
@@ -372,6 +373,16 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         response.headers().set(HttpHeaderNames.CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
         response.headers().set(
                 HttpHeaderNames.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
+    }
+
+    private static void setFileNameHeaders(HttpResponse response, File fileToCache) {
+        String name = "";
+        try {
+            name = java.net.URLEncoder.encode(fileToCache.getName(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        response.headers().set(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename*=UTF-8''" + name);
     }
 
     /**
