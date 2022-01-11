@@ -7,7 +7,6 @@ import com.github.zhizuqiu.nettyrestful.server.store.MethodData;
 import com.github.zhizuqiu.nettyrestful.server.tools.HttpTools;
 import com.github.zhizuqiu.nettyrestful.server.tools.MethodTool;
 import com.github.zhizuqiu.nettyrestful.server.tools.RequestParser;
-import com.google.gson.Gson;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,13 +17,15 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+/**
+ * RESTful handler
+ */
 public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(HttpRestfulHandler.class);
@@ -72,10 +73,9 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
             String jsonParam = RequestParser.getJsonParam(req);
             Object param = RequestParser.getParam(req);
 
+            // 根据缓存的元数据匹配 url，反射相应的方法，来处理请求
             FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
-
             Object re = invoke(method, restHandler, param, jsonParam, req, response);
-
             String result = MethodTool.serializeString(httpMap, re);
 
             //成功

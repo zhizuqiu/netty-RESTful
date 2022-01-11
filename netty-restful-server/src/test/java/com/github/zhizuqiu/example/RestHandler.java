@@ -110,22 +110,17 @@ public class RestHandler {
     }
 
     /**
-     * 接受表单
+     * 定义 post 表单请求处理方法，将在相应 url 被匹配时回调
      */
     @HttpMap(path = "/postForm",
             paramType = HttpMap.ParamType.FORM_DATA,
             returnType = HttpMap.ReturnType.APPLICATION_JSON,
             method = HttpMap.Method.POST)
     public Object postForm(Map<String, String> mapParam) {
-
-        System.out.printf(mapParam.toString());
-
         TestMessage param = new TestMessage();
-
         param.setType(mapParam.get("type"));
         param.setGroup(mapParam.get("group"));
         param.setMessage(mapParam.get("message"));
-
         return param;
     }
 

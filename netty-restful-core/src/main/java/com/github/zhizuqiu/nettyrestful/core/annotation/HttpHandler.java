@@ -13,8 +13,7 @@ import java.lang.annotation.Target;
 public @interface HttpHandler {
 
     /**
-     * 请求url地址
+     * 请求 url 地址
      */
     String path() default "";
-
 }

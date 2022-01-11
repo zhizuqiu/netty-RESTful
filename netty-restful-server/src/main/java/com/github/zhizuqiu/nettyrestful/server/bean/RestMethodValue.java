@@ -12,6 +12,15 @@ public class RestMethodValue {
     private Method method;
     private Object instance;
 
+    public RestMethodValue() {
+    }
+
+    public RestMethodValue(HttpMap httpMap, Method method, Object instance) {
+        this.httpMap = httpMap;
+        this.method = method;
+        this.instance = instance;
+    }
+
     public HttpMap getHttpMap() {
         return httpMap;
     }

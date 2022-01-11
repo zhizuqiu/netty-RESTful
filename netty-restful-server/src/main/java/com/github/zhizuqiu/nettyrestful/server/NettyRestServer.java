@@ -41,6 +41,7 @@ public class NettyRestServer {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(NettyRestServer.class);
 
     private Boolean ssl;
+    private String host;
     private Integer port;
     private List<String> packages;
     private Integer bossThreadCount;
@@ -58,6 +59,7 @@ public class NettyRestServer {
 
     public NettyRestServer() {
         ssl = false;
+        host = "0.0.0.0";
         port = 80;
         packages = new ArrayList<>();
         bossThreadCount = 2;
@@ -99,9 +101,9 @@ public class NettyRestServer {
                             enableUpload
                     ));
 
-            Channel ch = b.bind(port).sync().channel();
+            Channel ch = b.bind(host, port).sync().channel();
 
-            LOGGER.info("listen to " + (ssl ? "https" : "http") + "://127.0.0.1:" + port + '/');
+            LOGGER.info("listen to " + (ssl ? "https" : "http") + "://" + host + ":" + port + '/');
             LOGGER.info("bossThreadCount:" + bossThreadCount);
             LOGGER.info("workThreadCount:" + workThreadCount);
 
@@ -152,6 +154,7 @@ public class NettyRestServer {
             return;
         }
 
+        // 扫描
         List<Class> classes = MethodTool.getClasses(paths);
 
         for (Class httpHandlerClass : classes) {
@@ -182,25 +185,14 @@ public class NettyRestServer {
                 continue;
             }
 
-            // @HttpMap
+            // 扫描 @HttpMap 注解，分析出请求的元数据，并缓存到内存中
             for (Method method : httpHandlerClass.getMethods()) {
-                String methodName = method.getName();
                 HttpMap todoAnnotation = method.getAnnotation(HttpMap.class);
-
                 if (todoAnnotation != null) {
-
-                    RestMethodValue restMethodValue = new RestMethodValue();
-                    restMethodValue.setHttpMap(todoAnnotation);
-                    restMethodValue.setMethod(method);
-                    restMethodValue.setInstance(instance);
-
-                    String path = todoAnnotation.path();
-                    HttpMap.Method methodType = todoAnnotation.method();
-                    HttpMap.ParamType paramType = todoAnnotation.paramType();
-                    RestMethodKey restMethodKey = new RestMethodKey(path, methodType, paramType);
-
+                    RestMethodValue restMethodValue = new RestMethodValue(todoAnnotation, method, instance);
+                    RestMethodKey restMethodKey = new RestMethodKey(todoAnnotation.path(), todoAnnotation.method(), todoAnnotation.paramType());
                     MethodData.putRestMethod(restMethodKey, restMethodValue);
-                    LOGGER.info("load methon:[" + methodType + "][" + path + "][" + paramType + "]");
+                    LOGGER.info("load method:[" + todoAnnotation.method() + "][" + todoAnnotation.path() + "][" + todoAnnotation.paramType() + "]");
                 }
             }
 
@@ -248,6 +240,11 @@ public class NettyRestServer {
 
         public NettyRestServerBuilder setSsl(Boolean ssl) {
             nettyRestServer.setSsl(ssl);
+            return this;
+        }
+
+        public NettyRestServerBuilder setHost(String host) {
+            nettyRestServer.setHost(host);
             return this;
         }
 
@@ -342,6 +339,14 @@ public class NettyRestServer {
 
     public void setSsl(Boolean ssl) {
         this.ssl = ssl;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public Integer getPort() {
