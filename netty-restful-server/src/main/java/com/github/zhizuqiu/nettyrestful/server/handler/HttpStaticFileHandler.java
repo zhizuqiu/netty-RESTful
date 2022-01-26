@@ -244,7 +244,7 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
                 .append("<hr><table><tr><th style=\"width:500px;text-align:left;\">Name</th><th style=\"width:200px;text-align:left;\">LastModified</th><th style=\"text-align:left;\">length</th></tr>")
                 .append("<tr><td><a href=\"../\">../</a></td><td></td><td></td></tr>");
 
-        for (File f : dir.listFiles()) {
+        for (File f : Objects.requireNonNull(dir.listFiles())) {
             if (f.isHidden() || !f.canRead()) {
                 continue;
             }
@@ -258,7 +258,7 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
             String pre = "/" + MethodData.getConfig().getStaticFilePath();
             String path = name;
             if (name.startsWith(pre)) {
-                path = name.substring(pre.length(), name.length());
+                path = name.substring(pre.length());
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
