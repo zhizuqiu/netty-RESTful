@@ -306,8 +306,13 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
         request = null;
 
         // destroy the decoder to release all resources
-        decoder.destroy();
-        decoder = null;
+        // decoder 可能为 null（未处理过 multipart 请求，如普通 GET / JSON POST），
+        // 此时无需 destroy，否则会抛出 NPE 并导致 exceptionCaught 中后续清理被跳过。
+        if (decoder != null) {
+            decoder.destroy();
+            decoder = null;
+        }
+        fileUploads.clear();
     }
 
     /**
