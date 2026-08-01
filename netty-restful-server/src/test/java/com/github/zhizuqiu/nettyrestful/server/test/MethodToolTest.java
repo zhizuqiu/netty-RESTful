@@ -136,4 +136,21 @@ public class MethodToolTest {
         assertFalse(json.contains("\"type\""));
         assertTrue(json.contains("\"group\""));
     }
+
+    // ===== getSuffix (补充边界场景) =====
+
+    @Test
+    public void getSuffix_simpleExtension_returnsWithDot() {
+        assertEquals(".txt", MethodTool.getSuffix("a.txt"));
+    }
+
+    @Test
+    public void getSuffix_multipleDots_returnsLastSuffix() {
+        assertEquals(".gz", MethodTool.getSuffix("archive.tar.gz"));
+    }
+
+    @Test
+    public void getSuffix_trailingDot_returnsDot() {
+        assertEquals(".", MethodTool.getSuffix("a."));
+    }
 }
