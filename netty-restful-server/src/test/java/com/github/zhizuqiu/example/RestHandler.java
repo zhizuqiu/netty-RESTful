@@ -16,7 +16,6 @@ import io.netty.handler.codec.http.multipart.FileUpload;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
@@ -202,7 +201,7 @@ public class RestHandler {
      * 简单的GET请求
      */
     @HttpMap(path = "/cookie")
-    public Map get(Map<String, String> mapParam, HttpRequest req, HttpResponse rep) {
+    public Map<String, String> get(Map<String, String> mapParam, HttpRequest req, HttpResponse rep) {
         Map<String, String> cookies = PublicTools.getCookie(req);
         System.out.println(cookies);
         System.out.println(PublicTools.getHost(req));
