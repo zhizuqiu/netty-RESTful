@@ -114,6 +114,7 @@ public class NettyRestServer {
             ch.closeFuture().sync();
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
+            throw e;
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

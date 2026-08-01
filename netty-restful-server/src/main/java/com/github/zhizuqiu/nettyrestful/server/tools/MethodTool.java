@@ -100,7 +100,9 @@ public class MethodTool {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                classList.add(cls);
+                if (cls != null) {
+                    classList.add(cls);
+                }
             }
         }
         return classList;

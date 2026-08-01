@@ -109,6 +109,7 @@ public class SynchronousMethodHandler implements MethodHandler {
 
         Object param = getParam(visionRequest.getMethod(), argv);
         if (param != null) {
+            request.release();
             request = new DefaultFullHttpRequest(
                     HttpVersion.HTTP_1_1,
                     visionRequest.getHttpMethod(),

@@ -12,21 +12,22 @@ import com.github.zhizuqiu.nettyrestful.server.tools.MethodTool;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MethodData {
 
     /**
      * 存储restful method
      */
-    private static final Map<RestMethodKey, RestMethodValue> REST_METHOD_MAP = new HashMap<>();
+    private static final Map<RestMethodKey, RestMethodValue> REST_METHOD_MAP = new ConcurrentHashMap<>();
     /**
      * 存储template method
      */
-    private static final Map<String, TemplateMethodValue> TEMPLATE_METHOD_MAP = new HashMap<>();
+    private static final Map<String, TemplateMethodValue> TEMPLATE_METHOD_MAP = new ConcurrentHashMap<>();
     /**
      * 存储静态资源
      */
-    private static final Map<RestMethodKey, ResourceValue> RESOURCES_MAP = new HashMap<>();
+    private static final Map<RestMethodKey, ResourceValue> RESOURCES_MAP = new ConcurrentHashMap<>();
     /**
      * 存储拦截器
      */
@@ -34,7 +35,7 @@ public class MethodData {
     /**
      * 存储文件后缀与ContentType的对应关系
      */
-    public static Map<String, String> suffixMapContentType = new HashMap<>();
+    public static Map<String, String> suffixMapContentType = new ConcurrentHashMap<>();
     /**
      * 存储配置
      */
