@@ -80,7 +80,9 @@ public class PublicTools {
         String str = "";
         List<Map.Entry<String, String>> entries = req.headers().entries();
         for (Map.Entry<String, String> entry : entries) {
-            if (key.equals(entry.getKey())) {
+            // HTTP header 名称大小写不敏感（RFC 7230），使用 equalsIgnoreCase
+            // 以便 getContentLength 等用小写 key 的方法能匹配到标准大写 header。
+            if (key.equalsIgnoreCase(entry.getKey())) {
                 str = entry.getValue();
             }
         }
