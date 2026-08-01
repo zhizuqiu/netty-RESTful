@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.multipart.*;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDecoderException;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -65,7 +66,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
         HandleResult result = handle(msg);
         switch (result.result) {
             case NEXT:
-                ctx.fireChannelRead(msg);
+                ctx.fireChannelRead(ReferenceCountUtil.retain(msg));
                 break;
             case CONTINUE:
                 break;

@@ -138,6 +138,7 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
             FullHttpResponse res = customStaticFileHandler.customResponse(uri, raf, new DefaultFullHttpResponse(HTTP_1_1, OK));
             if (res != null) {
                 HttpTools.sendHttpResponse(ctx, req, res);
+                raf.close();
                 return true;
             }
         }
@@ -184,6 +185,14 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
         });
 
         // Decide whether to close the connection or not.
+        final RandomAccessFile finalRaf = raf;
+        lastContentFuture.addListener((ChannelFutureListener) future -> {
+            try {
+                finalRaf.close();
+            } catch (Exception ignored) {
+                // ignore
+            }
+        });
         if (!HttpUtil.isKeepAlive(req)) {
             // Close the connection when the whole content is written out.
             lastContentFuture.addListener(ChannelFutureListener.CLOSE);

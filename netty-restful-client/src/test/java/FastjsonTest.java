@@ -2,8 +2,10 @@ import com.github.zhizuqiu.nettyrestful.client.NettyRestClient;
 import com.github.zhizuqiu.nettyrestful.codec.fastjson.FastjsonDecoder;
 import com.github.zhizuqiu.nettyrestful.codec.fastjson.FastjsonEncoder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("manual integration test, requires an external server running on the configured port")
 public class FastjsonTest {
     private static NettyIf nettyIf;
 

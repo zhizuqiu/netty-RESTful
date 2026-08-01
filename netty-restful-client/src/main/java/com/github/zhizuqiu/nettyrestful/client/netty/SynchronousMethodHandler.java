@@ -83,10 +83,6 @@ public class SynchronousMethodHandler implements MethodHandler {
             createAndSendHttpRequest(responsePromise, channelFuture, future.channel().pipeline(), visionRequest, argv).addListener((ChannelFutureListener) f -> {
                 if (!f.isSuccess()) {
                     responsePromise.setException(future.cause());
-                    if (!future.channel().eventLoop().inEventLoop()) {
-                        future.channel().eventLoop().shutdownGracefully();
-                    }
-
                     future.channel().close();
                 }
             });

@@ -27,11 +27,9 @@ public class HttpTools {
      * @return 用于响应请求的FullHttpResponse
      */
     public static FullHttpResponse getFullHttpResponse(String text, FullHttpResponse response, HttpMap.ReturnType returnType) {
-        ByteBuf content = Unpooled.copiedBuffer("", CharsetUtil.UTF_8);
-        FullHttpResponse res = new DefaultFullHttpResponse(response.protocolVersion(), response.status(), content, response.headers(), response.trailingHeaders());
         if (response.status() == OK) {
-            content = Unpooled.copiedBuffer(text, CharsetUtil.UTF_8);
-            res = new DefaultFullHttpResponse(response.protocolVersion(), response.status(), content, response.headers(), response.trailingHeaders());
+            ByteBuf content = Unpooled.copiedBuffer(text, CharsetUtil.UTF_8);
+            FullHttpResponse res = new DefaultFullHttpResponse(response.protocolVersion(), response.status(), content, response.headers(), response.trailingHeaders());
             if (returnType == HttpMap.ReturnType.APPLICATION_JSON) {
                 res.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
             } else if (returnType == HttpMap.ReturnType.TEXT_HTML) {
@@ -40,8 +38,10 @@ public class HttpTools {
                 res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
             }
             HttpUtil.setContentLength(res, content.readableBytes());
+            return res;
         }
-        return res;
+        return new DefaultFullHttpResponse(response.protocolVersion(), response.status(),
+                Unpooled.copiedBuffer("", CharsetUtil.UTF_8), response.headers(), response.trailingHeaders());
     }
 
     /**
@@ -53,18 +53,19 @@ public class HttpTools {
      * @return 用于响应请求的FullHttpResponse
      */
     public static FullHttpResponse getFullHttpResponse(String text, FullHttpResponse response, String contentType) {
-        FullHttpResponse res = new DefaultFullHttpResponse(response.protocolVersion(), response.status());
         if (response.status() == OK) {
             ByteBuf content = Unpooled.copiedBuffer(text, CharsetUtil.UTF_8);
-            res = new DefaultFullHttpResponse(response.protocolVersion(), response.status(), content);
+            FullHttpResponse res = new DefaultFullHttpResponse(response.protocolVersion(), response.status(), content, response.headers(), response.trailingHeaders());
             if (contentType != null) {
                 res.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType + "; charset=UTF-8");
             } else {
                 res.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
             }
             HttpUtil.setContentLength(res, content.readableBytes());
+            return res;
         }
-        return res;
+        return new DefaultFullHttpResponse(response.protocolVersion(), response.status(),
+                Unpooled.copiedBuffer("", CharsetUtil.UTF_8), response.headers(), response.trailingHeaders());
     }
 
     public static void sendHttpResponse(ChannelHandlerContext ctx, HttpMessage req, FullHttpResponse res) {

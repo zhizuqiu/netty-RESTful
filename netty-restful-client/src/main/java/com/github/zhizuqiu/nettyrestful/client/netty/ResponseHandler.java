@@ -52,4 +52,15 @@ public class ResponseHandler extends SimpleChannelInboundHandler<FullHttpRespons
             }
         }
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        promise.tryFailure(cause);
+        ctx.close();
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        promise.tryFailure(new IOException("Channel closed before response received"));
+    }
 }
