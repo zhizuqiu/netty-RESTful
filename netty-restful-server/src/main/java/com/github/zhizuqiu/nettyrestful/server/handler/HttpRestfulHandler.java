@@ -80,6 +80,7 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
             //成功
             FullHttpResponse res = HttpTools.getFullHttpResponse(result, response, httpMap.returnType());
+            response.release();
             return HttpTools.getHttpResponse(req, res);
         } else {
             return null;
@@ -178,8 +179,8 @@ public class HttpRestfulHandler extends SimpleChannelInboundHandler<FullHttpRequ
                     // method(param,jsonParam,req,response)
                     re = method.invoke(restHandler, param, jsonParam, req, response);
                 } else if (cs[0] == String.class && (cs[1] == Map.class || cs[1] == Object.class) && (cs[2] == HttpRequest.class || cs[2] == FullHttpRequest.class || cs[2] == DefaultFullHttpRequest.class) && (cs[3] == HttpResponse.class || cs[3] == FullHttpResponse.class || cs[3] == DefaultFullHttpResponse.class)) {
-                    // method(param,jsonParam,req,response)
-                    re = method.invoke(restHandler, param, jsonParam, req, response);
+                    // method(jsonParam,param,req,response)
+                    re = method.invoke(restHandler, jsonParam, param, req, response);
                 }
             }
         } catch (IllegalAccessException e) {

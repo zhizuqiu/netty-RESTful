@@ -88,6 +88,7 @@ public class HttpHtmlHandler extends SimpleChannelInboundHandler<FullHttpRequest
                 Class returnType = method.getReturnType();
                 if (!"void".equals(returnType.getName())) {
                     if (re == null) {
+                        response.release();
                         return HttpTools.getHttpResponse(req, new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR));
                     }
                 } else {
@@ -101,6 +102,7 @@ public class HttpHtmlHandler extends SimpleChannelInboundHandler<FullHttpRequest
 
             //成功
             FullHttpResponse res = HttpTools.getFullHttpResponse(value, response, contentType);
+            response.release();
             return HttpTools.getHttpResponse(req, res);
         }
 

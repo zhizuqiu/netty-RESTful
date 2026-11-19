@@ -4,8 +4,10 @@ import com.github.zhizuqiu.nettyrestful.codec.gson.GsonEncoder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("manual integration test, requires an external server running on the configured port")
 public class GsonTest {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static NettyIf nettyIf;

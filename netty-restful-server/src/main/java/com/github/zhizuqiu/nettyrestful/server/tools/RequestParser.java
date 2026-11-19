@@ -78,6 +78,7 @@ public class RequestParser {
                     e.printStackTrace();
                 }
             }
+            decoderPost.destroy();
         }
 
         return requestParams;

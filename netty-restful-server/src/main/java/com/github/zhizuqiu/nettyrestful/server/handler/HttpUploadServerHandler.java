@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.multipart.*;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDecoderException;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -55,9 +56,8 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (decoder != null) {
-            decoder.cleanFiles();
-        }
+        reset();
+        super.channelInactive(ctx);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
         HandleResult result = handle(msg);
         switch (result.result) {
             case NEXT:
-                ctx.fireChannelRead(msg);
+                ctx.fireChannelRead(ReferenceCountUtil.retain(msg));
                 break;
             case CONTINUE:
                 break;
@@ -73,6 +73,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                 Object re = invoke(result.response);
                 String str = MethodTool.serializeString(restMethodValue.getHttpMap(), re);
                 FullHttpResponse res = HttpTools.getFullHttpResponse(str, result.response, restMethodValue.getHttpMap().returnType());
+                result.response.release();
                 HttpTools.sendHttpResponse(ctx, request, res, false);
                 reset();
                 break;
@@ -129,7 +130,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                     re = method.invoke(restHandler, param, fs);
                 } else if ((cs[0] == Map.class || cs[0] == Object.class) && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
                     // method(param,response)
-                    re = method.invoke(restHandler, param, fs);
+                    re = method.invoke(restHandler, param, response);
                 } else if (FILE_UPLOAD_ARRAY_NAME.equals(cs[0].getName()) && (cs[1] == HttpResponse.class || cs[1] == FullHttpResponse.class || cs[1] == DefaultFullHttpResponse.class)) {
                     // method(fileUploads,response)
                     re = method.invoke(restHandler, fs, response);
@@ -146,13 +147,14 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                     re = method.invoke(restHandler, fs, param, response);
                 }
             }
-            fileUploads.clear();
         } catch (IllegalAccessException e) {
             LOGGER.error("IllegalAccessException:" + e.getMessage());
             response.setStatus(INTERNAL_SERVER_ERROR);
         } catch (InvocationTargetException e) {
             LOGGER.error("InvocationTargetException:" + e.getMessage());
             response.setStatus(INTERNAL_SERVER_ERROR);
+        } finally {
+            fileUploads.clear();
         }
         return re;
     }
@@ -196,7 +198,9 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                 decoder = new HttpPostRequestDecoder(FACTORY, request);
             } catch (ErrorDataDecoderException e1) {
                 e1.printStackTrace();
-                FullHttpResponse res = HttpTools.getFullHttpResponse(e1.getMessage(), new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR), restMethodValue.getHttpMap().returnType());
+                FullHttpResponse tmpl = new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
+                FullHttpResponse res = HttpTools.getFullHttpResponse(e1.getMessage(), tmpl, restMethodValue.getHttpMap().returnType());
+                tmpl.release();
                 return new HandleResult(HandleEnum.EXCEPTION, e1, res);
             }
         }
@@ -220,7 +224,9 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                 // example of reading only if at the end
                 if (chunk instanceof LastHttpContent) {
                     // reset();
-                    FullHttpResponse res = HttpTools.getFullHttpResponse("success", new DefaultFullHttpResponse(HTTP_1_1, OK), restMethodValue.getHttpMap().returnType());
+                    FullHttpResponse tmpl = new DefaultFullHttpResponse(HTTP_1_1, OK);
+                    FullHttpResponse res = HttpTools.getFullHttpResponse("success", tmpl, restMethodValue.getHttpMap().returnType());
+                    tmpl.release();
                     return new HandleResult(HandleEnum.END, res);
                 }
             }
@@ -300,8 +306,13 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
         request = null;
 
         // destroy the decoder to release all resources
-        decoder.destroy();
-        decoder = null;
+        // decoder 可能为 null（未处理过 multipart 请求，如普通 GET / JSON POST），
+        // 此时无需 destroy，否则会抛出 NPE 并导致 exceptionCaught 中后续清理被跳过。
+        if (decoder != null) {
+            decoder.destroy();
+            decoder = null;
+        }
+        fileUploads.clear();
     }
 
     /**
@@ -371,6 +382,8 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+        reset();
         ctx.channel().close();
     }
 }

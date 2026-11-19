@@ -31,30 +31,17 @@ public class PublicTools {
         }
         StringBuilder stringBuffer = new StringBuilder();
         File file = new File(MethodData.getConfig().getStaticFilePath() + "/" + path);
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (fileReader == null) {
-            return stringBuffer.toString();
-        }
-        BufferedReader br = new BufferedReader(fileReader);
-        String s;
-        try {
+        try (FileReader fileReader = new FileReader(file);
+             BufferedReader br = new BufferedReader(fileReader)) {
+            String s;
             while ((s = br.readLine()) != null) {
                 stringBuffer.append(s).append('\n');
             }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return stringBuffer.toString();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                br.close();
-                fileReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
         // @TemplateMap
@@ -75,9 +62,9 @@ public class PublicTools {
                 if (value != null) {
                     String[] values = value.split(";");
                     for (String v : values) {
-                        String[] vs = v.split("=");
+                        String[] vs = v.split("=", 2);
                         if (vs.length == 2) {
-                            cookies.put(vs[0], vs[1]);
+                            cookies.put(vs[0].trim(), vs[1]);
                         }
                     }
                 }
@@ -93,7 +80,9 @@ public class PublicTools {
         String str = "";
         List<Map.Entry<String, String>> entries = req.headers().entries();
         for (Map.Entry<String, String> entry : entries) {
-            if (key.equals(entry.getKey())) {
+            // HTTP header 名称大小写不敏感（RFC 7230），使用 equalsIgnoreCase
+            // 以便 getContentLength 等用小写 key 的方法能匹配到标准大写 header。
+            if (key.equalsIgnoreCase(entry.getKey())) {
                 str = entry.getValue();
             }
         }

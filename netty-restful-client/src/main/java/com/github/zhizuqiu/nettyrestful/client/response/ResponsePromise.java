@@ -21,7 +21,7 @@ public class ResponsePromise {
     public void waitForPromiseSuccess() {
         while (!promise.isDone() && !promise.isCancelled()) {
             promise.awaitUninterruptibly();
-            if (!promise.isSuccess()) {
+            if (!promise.isSuccess() && !promise.isCancelled()) {
                 this.setException(promise.cause());
             }
             break;
@@ -46,8 +46,8 @@ public class ResponsePromise {
     }
 
     public void cancel(Throwable throwable) {
-        this.promise.cancel(true);
         this.exception = throwable;
+        this.promise.cancel(true);
     }
 
     public void handleRetry(Throwable cause) {
