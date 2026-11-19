@@ -28,6 +28,7 @@ public class StaticFileHandlerTest {
         Path dir = Paths.get(STATIC_DIR);
         Files.createDirectories(dir);
         Files.write(dir.resolve("hello.txt"), "hello-static".getBytes(StandardCharsets.UTF_8));
+        Files.write(dir.resolve("noext"), "binary".getBytes(StandardCharsets.UTF_8));
         Files.createDirectories(dir.resolve("subdir"));
 
         Config cfg = new Config();
@@ -73,6 +74,21 @@ public class StaticFileHandlerTest {
             assertEquals(200, con.getResponseCode());
             assertTrue("Content-Type 应为 text/plain, 实际: " + con.getContentType(),
                     con.getContentType().contains("text/plain"));
+        } finally {
+            server.stop();
+        }
+    }
+
+    /**
+     * 无后缀文件（如 dispatch 客户端二进制）也应能正常下载，不能因为取不到 suffix 而报错。
+     */
+    @Test
+    public void extensionlessFile_served() throws Exception {
+        TestServerSupport.Lifecycle server = TestServerSupport.start(false);
+        try {
+            HttpURLConnection con = openGet(server.port(), "/noext");
+            assertEquals(200, con.getResponseCode());
+            assertEquals("binary", readAll(con.getInputStream()));
         } finally {
             server.stop();
         }

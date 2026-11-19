@@ -16,9 +16,11 @@ import io.netty.util.internal.SystemPropertyUtil;
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -401,13 +403,21 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpR
      * @param file     file to extract content type
      */
     private static void setContentTypeHeader(HttpResponse response, File file) {
+        String contentType = null;
         String suffix = MethodTool.getSuffix(file.getPath());
-        String contentType = MethodData.suffixMapContentType.get(suffix);
-        if (contentType != null) {
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType + "; charset=utf-8");
-        } else {
-            MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()) + "; charset=utf-8");
+        if (suffix != null) {
+            contentType = MethodData.suffixMapContentType.get(suffix);
         }
+        if (contentType == null) {
+            try {
+                contentType = Files.probeContentType(file.toPath());
+            } catch (IOException ignored) {
+                // 探测失败时回退到二进制类型
+            }
+        }
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType + "; charset=utf-8");
     }
 }

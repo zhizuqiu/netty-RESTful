@@ -137,7 +137,7 @@ public class NettyRestServer {
                 String re = stringStringMap.get(path);
                 RestMethodKey restMethodKey = new RestMethodKey(path, HttpMap.Method.GET, HttpMap.ParamType.URL_DATA);
                 String suffix = MethodTool.getSuffix(path);
-                String contentType = MethodData.suffixMapContentType.get(suffix);
+                String contentType = suffix == null ? null : MethodData.suffixMapContentType.get(suffix);
                 ResourceValue resourceValue = new ResourceValue(contentType, re);
                 MethodData.putResource(restMethodKey, resourceValue);
             }
